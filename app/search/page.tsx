@@ -4,7 +4,7 @@ import { getSearch } from '@/lib/scraper';
 import { AnimeCard } from '@/components/AnimeCard';
 import { Pagination } from '@/components/Pagination';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Search } from 'lucide-react';
 
 export default function SearchPage() {
@@ -110,27 +110,29 @@ export default function SearchPage() {
   const { items, currentPage, hasNext } = results ?? { items: [], currentPage: 1, hasNext: false };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold text-white">Hasil pencarian untuk "{q}"</h1>
-        <p className="text-white/40 text-sm mt-1">Ditemukan {items.length} anime di halaman {currentPage}</p>
+    <Suspense fallback={<div className="flex flex-col items-center justify-center py-20"><p className="text-white/40">Loading...</p></div>}>
+      <div className="flex flex-col gap-6">
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-white">Hasil pencarian untuk "{q}"</h1>
+          <p className="text-white/40 text-sm mt-1">Ditemukan {items.length} anime di halaman {currentPage}</p>
+        </div>
+
+        {items.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {items.map((anime, i) => (
+              <AnimeCard key={`search-${anime.slug}-${i}`} anime={anime} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 text-white/40">
+            Tidak ada anime yang cocok dengan pencarian Anda.
+          </div>
+        )}
+
+        {items.length > 0 && (
+          <Pagination currentPage={currentPage} hasNext={hasNext} basePath={`/search?q=${encodeURIComponent(q)}`} />
+        )}
       </div>
-
-      {items.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {items.map((anime, i) => (
-            <AnimeCard key={`search-${anime.slug}-${i}`} anime={anime} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 text-white/40">
-          Tidak ada anime yang cocok dengan pencarian Anda.
-        </div>
-      )}
-
-      {items.length > 0 && (
-        <Pagination currentPage={currentPage} hasNext={hasNext} basePath={`/search?q=${encodeURIComponent(q)}`} />
-      )}
-    </div>
+    </Suspense>
   );
 }
