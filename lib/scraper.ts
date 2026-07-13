@@ -83,11 +83,20 @@ function parseAnimeListing(html: string): AnimeItem[] {
       slug = seriesMatch[2];
       link = `/anime/${slug}`; // We map /series/ back to our internal /anime/ path
     } else {
-      // If it's an episode URL on the homepage, e.g. https://otakudesu.fit/episode-slug/
-      // we'll just extract the last path segment as the slug
+      // Homepage/ongoing cards link to an EPISODE url, e.g.
+      // https://otakudesu.fit/liar-game-episode-15-subtitle-indonesia/
+      // Derive the series slug by stripping the "-episode-...-subtitle-indonesia"
+      // tail so the card opens the detail page instead of jumping to the player.
       const parts = url.split('/').filter(Boolean);
-      slug = parts[parts.length - 1];
-      if (slug) link = `/episode/${slug}`;
+      const lastSegment = parts[parts.length - 1] || '';
+      const seriesSlug = lastSegment.replace(/-episode-.*$/, '');
+      if (seriesSlug && seriesSlug !== lastSegment) {
+        slug = seriesSlug;
+        link = `/anime/${slug}`;
+      } else {
+        slug = lastSegment;
+        if (slug) link = `/episode/${slug}`;
+      }
     }
 
     if (!slug) continue; // Skip invalid links like homepage root "/"
@@ -214,8 +223,14 @@ export async function getDetail(slug: string) {
   if (titleMatch) title = decodeHTML(titleMatch[1].trim());
 
   let poster = null;
-  const posterMatch = html.match(/<img[^>]+class="ts-post-image[^>]+src="([^"]+)"/);
-  if (posterMatch) poster = posterMatch[1];
+  // Grab the <img ...> tag that carries the ts-post-image class, then pull its src.
+  // The src attribute may appear before OR after the class attribute, so match the
+  // whole tag first and extract src separately (order-independent).
+  const posterTag = html.match(/<img[^>]*\bclass="[^"]*ts-post-image[^>]*>/) || html.match(/<img[^>]*\bts-post-image\b[^>]*>/);
+  if (posterTag) {
+    const srcMatch = posterTag[0].match(/\bsrc="([^"]+)"/);
+    if (srcMatch) poster = srcMatch[1];
+  }
 
   let synopsis = null;
   const synMatch = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
