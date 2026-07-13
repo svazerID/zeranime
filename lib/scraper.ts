@@ -184,9 +184,10 @@ export async function getSearch(query: string, page: number = 1): Promise<AnimeL
 }
 
 export async function getGenresList(): Promise<{ name: string; slug: string; count: number | null }[]> {
-  const html = await fetchPage(`${BASE_URL}/genre-list/`);
-  const genreMatches = extractAll(/<a href="[^"]*\/genres\/([^/]+)\/">([^<]+)<\/a>/g, html);
-  
+  const html = await fetchPage(`${BASE_URL}/`);
+  // Match genre links from sidebar: <a href=".../genres/slug/" rel="tag">Name</a>
+  const genreMatches = extractAll(/<a[^>]*href="[^"]*\/genres\/([^\/]+)\/"[^>]*>([^<]+)<\/a>/g, html);
+
   const seen = new Set<string>();
   return genreMatches
     .map(m => ({ slug: m[1], name: m[2], count: null }))
