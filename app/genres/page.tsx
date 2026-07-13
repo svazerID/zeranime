@@ -16,7 +16,7 @@ export default async function GenresPage() {
           <Link
             key={genre.slug}
             href={`/genre/${genre.slug}`}
-            className="flex items-center justify-between gap-3 px-4 py-2 rounded-full border border-white/10 bg-[#0a0a0a] hover:border-[#ff4e00]/50 transition-colors shadow-sm"
+            className="flex items-center justify-between gap-3 px-4 py-2 rounded-full border border-white/10 bg-[#0d1015] hover:border-[#ff9d00]/50 transition-colors shadow-sm"
           >
             <span className="font-medium text-white">{genre.name}</span>
             {genre.count !== null && (

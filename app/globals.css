@@ -1,1 +1,113 @@
 @import "tailwindcss";
+
+:root {
+  --bg: #050608;
+  --bg-soft: #0a0c10;
+  --bg-card: #0d1015;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #ff6a00;
+  --accent-2: #ff9d00;
+  --accent-blue: #2f9bff;
+  --accent-blue-2: #66c0ff;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg);
+  overflow-x: hidden;
+}
+
+/* Selection */
+::selection {
+  background: rgba(255, 106, 0, 0.3);
+  color: #fff;
+}
+
+/* Custom scrollbar (desktop) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+  background-clip: padding-box;
+}
+
+/* Utility: hide scrollbar for horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Reusable gradient text for brand wordmark */
+.brand-gradient {
+  background: linear-gradient(100deg, var(--accent-blue-2) 0%, #fff 35%, var(--accent-2) 70%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Soft ambient glow used behind hero / cards */
+.glow-blur {
+  filter: blur(60px);
+  opacity: 0.5;
+}
+
+/* Fade-in for content sections */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease both;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.09) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Extra bottom padding on mobile so content clears the bottom nav */
+@media (max-width: 767px) {
+  .has-bottom-nav {
+    padding-bottom: 5.5rem;
+  }
+}

@@ -53,9 +53,9 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
         )}
 
         {episode.nextEpisode ? (
-          <Link 
+          <Link
             href={`/episode/${episode.nextEpisode}`}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#ff4e00] text-black hover:bg-[#ff4e00]/90 transition-colors font-bold text-sm shadow-lg shadow-[#ff4e00]/20"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff6a00] to-[#ff9d00] text-black hover:brightness-110 transition-all font-bold text-sm shadow-lg shadow-[#ff6a00]/20"
           >
             Next Episode <ChevronRight className="w-4 h-4" />
           </Link>
@@ -72,9 +72,9 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
                 key={ep.slug} 
                 href={`/episode/${ep.slug}`}
                 className={`p-3 rounded-xl border text-sm font-bold transition-all ${
-                  ep.slug === slug 
-                  ? 'border-[#ff4e00] bg-[#ff4e00]/10 text-[#ff4e00]' 
-                  : 'border-white/10 bg-[#0a0a0a] hover:border-white/20 hover:bg-white/5 text-white/60 hover:text-white'
+                  ep.slug === slug
+                  ? 'border-[#ff9d00] bg-[#ff9d00]/10 text-[#ff9d00]'
+                  : 'border-white/10 bg-[#0d1015] hover:border-white/20 hover:bg-white/5 text-white/60 hover:text-white'
                 }`}
               >
                 <div className="truncate">{ep.title}</div>

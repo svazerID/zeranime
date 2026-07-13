@@ -56,7 +56,7 @@ export default function VideoPlayer({
                  }}
                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors ${
                    isActive
-                     ? 'border-[#ff4e00]/50 bg-[#ff4e00]/10 text-[#ff4e00]'
+                     ? 'border-[#ff9d00]/50 bg-[#ff9d00]/10 text-[#ff9d00]'
                      : 'border-white/10 bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'
                  }`}
                >

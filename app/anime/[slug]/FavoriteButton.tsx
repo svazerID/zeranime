@@ -18,12 +18,12 @@ export function FavoriteButton({ anime }: { anime: FavoriteItem }) {
         toggleFavorite(anime);
       }}
       className={`flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl font-bold transition-all ${
-        fav 
-        ? 'bg-[#ff4e00]/20 text-[#ff4e00] border border-[#ff4e00]/50 hover:bg-[#ff4e00]/30' 
+        fav
+        ? 'bg-[#ff6a00]/20 text-[#ff9d00] border border-[#ff6a00]/50 hover:bg-[#ff6a00]/30'
         : 'bg-white/5 text-white/60 hover:text-white border border-white/10 hover:border-white/20 hover:bg-white/10'
       }`}
     >
-      <Heart className={`w-5 h-5 ${fav ? 'fill-[#ff4e00]' : ''}`} />
+      <Heart className={`w-5 h-5 ${fav ? 'fill-[#ff9d00]' : ''}`} />
       {fav ? 'Favorited' : 'Add to Favorites'}
     </button>
   );

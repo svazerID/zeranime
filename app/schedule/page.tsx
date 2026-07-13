@@ -10,7 +10,7 @@ export default async function SchedulePage() {
   return (
     <div className="flex flex-col gap-8 max-w-6xl mx-auto">
       <div className="flex items-center gap-2 border-b border-white/10 pb-4">
-        <Calendar className="w-8 h-8 text-[#ff4e00]" />
+        <Calendar className="w-8 h-8 text-[#ff9d00]" />
         <div>
            <h1 className="text-3xl font-bold text-white">Currently Airing</h1>
            <p className="text-white/40">Anime that are currently airing this season.</p>

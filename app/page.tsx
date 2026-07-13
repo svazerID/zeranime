@@ -5,6 +5,7 @@ import {
 import { AnimeCard } from '@/components/AnimeCard';
 import { Pagination } from '@/components/Pagination';
 import { HorizontalScroller } from '@/components/HorizontalScroller';
+import { HeroSpotlight } from '@/components/HeroSpotlight';
 
 export default async function HomePage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
@@ -12,6 +13,7 @@ export default async function HomePage(props: { searchParams?: Promise<{ [key: s
   
   let homeData = { items: [] as any[], currentPage: 1, hasNext: false };
   let extraSections: { title: string, href: string, items: any[] }[] = [];
+  let heroItems: any[] = [];
 
   if (page === 1) {
     // Group 1
@@ -35,6 +37,7 @@ export default async function HomePage(props: { searchParams?: Promise<{ [key: s
     ]);
 
     homeData = resHome as any;
+    heroItems = (resTop.items && resTop.items.length > 0 ? resTop.items : resHome.items) || [];
     extraSections = [
       { title: "Latest Updated", href: "/", items: resHome.items },
       { title: "Most Viewed", href: "/most-viewed", items: resTop.items },
@@ -56,6 +59,9 @@ export default async function HomePage(props: { searchParams?: Promise<{ [key: s
     <div className="flex flex-col gap-10 overflow-hidden w-full">
       {page === 1 ? (
         <>
+          {heroItems.length > 0 && (
+            <HeroSpotlight items={heroItems} />
+          )}
           {extraSections.map((section, idx) => {
             if (!section.items || section.items.length === 0) return null;
             return (
