@@ -18,9 +18,6 @@ html {
 
 body {
   background-color: var(--bg);
-  /* `clip` prevents creating a scroll container (unlike `hidden`), which on
-     Chrome Android caused stale repaint tiles / ghost-trail artifacts. */
-  overflow-x: clip;
 }
 
 /* Chrome Android may report itself as hover-capable and fire :hover while the
