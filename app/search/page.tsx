@@ -1,3 +1,5 @@
+'use client';
+
 import { getSearch } from '@/lib/scraper';
 import { AnimeCard } from '@/components/AnimeCard';
 import { Pagination } from '@/components/Pagination';
