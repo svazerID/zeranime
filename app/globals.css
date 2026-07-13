@@ -18,7 +18,21 @@ html {
 
 body {
   background-color: var(--bg);
-  overflow-x: hidden;
+  /* `clip` prevents creating a scroll container (unlike `hidden`), which on
+     Chrome Android caused stale repaint tiles / ghost-trail artifacts. */
+  overflow-x: clip;
+}
+
+/* Chrome Android leaves ghost-trail repaint artifacts when a sticky/fixed bar
+   uses backdrop-filter and content scrolls beneath it. Promoting the bars to
+   their own isolated compositing layer forces a clean repaint. */
+nav.sticky,
+nav.fixed {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  isolation: isolate;
 }
 
 /* Selection */
