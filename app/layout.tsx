@@ -10,6 +10,11 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'ZerAnime',
   description: 'Watch anime full episodes directly.',
+  icons: {
+    icon: '/logo.jpg',
+    shortcut: '/logo.jpg',
+    apple: '/logo.jpg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
