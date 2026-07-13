@@ -1,19 +1,21 @@
-'use client';
-
 import { getSearch } from '@/lib/scraper';
 import { AnimeCard } from '@/components/AnimeCard';
 import { Pagination } from '@/components/Pagination';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useState, useEffect, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 
-export default function SearchPage() {
+export default function SearchPage({ searchParams }: { searchParams: { [key: string]: string | string[] } }) {
+  const q = searchParams.q || '';
+  const page = searchParams.page ? parseInt(searchParams.page as string) : 1;
+
+  return <SearchPageClient initialQ={q} initialPage={page} />;
+}
+
+function SearchPageClient({ initialQ, initialPage }: { initialQ: string; initialPage: number }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const q = searchParams.get('q') || '';
-  const page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
-  const [inputValue, setInputValue] = useState(q);
+  const [inputValue, setInputValue] = useState(initialQ);
+  const [pageState, setPageState] = useState(initialPage);
   const [results, setResults] = useState<{ items: any[]; currentPage: number; hasNext: boolean } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,13 +27,19 @@ export default function SearchPage() {
       const params = new URLSearchParams();
       params.set('q', query);
       params.set('page', '1');
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(`${window.location.pathname}?${params.toString()}`);
     }
   };
 
-  // Fetch search results when q or page changes
+  // Sync with props when they change (e.g., via popstate or link)
   useEffect(() => {
-    if (!q) {
+    setInputValue(initialQ);
+    setPageState(initialPage);
+  }, [initialQ, initialPage]);
+
+  // Fetch search results when inputValue or pageState changes
+  useEffect(() => {
+    if (!inputValue) {
       setResults(null);
       return;
     }
@@ -40,7 +48,7 @@ export default function SearchPage() {
       setLoading(true);
       setError(null);
       try {
-        const data = await getSearch(q, page);
+        const data = await getSearch(inputValue, pageState);
         if (!cancelled) {
           setResults(data);
         }
@@ -59,9 +67,9 @@ export default function SearchPage() {
     return () => {
       cancelled = true;
     };
-  }, [q, page]);
+  }, [inputValue, pageState]);
 
-  if (!q) {
+  if (!inputValue) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <div className="w-full max-w-xl">
@@ -110,29 +118,27 @@ export default function SearchPage() {
   const { items, currentPage, hasNext } = results ?? { items: [], currentPage: 1, hasNext: false };
 
   return (
-    <Suspense fallback={<div className="flex flex-col items-center justify-center py-20"><p className="text-white/40">Loading...</p></div>}>
-      <div className="flex flex-col gap-6">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold text-white">Hasil pencarian untuk "{q}"</h1>
-          <p className="text-white/40 text-sm mt-1">Ditemukan {items.length} anime di halaman {currentPage}</p>
-        </div>
-
-        {items.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {items.map((anime, i) => (
-              <AnimeCard key={`search-${anime.slug}-${i}`} anime={anime} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20 text-white/40">
-            Tidak ada anime yang cocok dengan pencarian Anda.
-          </div>
-        )}
-
-        {items.length > 0 && (
-          <Pagination currentPage={currentPage} hasNext={hasNext} basePath={`/search?q=${encodeURIComponent(q)}`} />
-        )}
+    <div className="flex flex-col gap-6">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold text-white">Hasil pencarian untuk "{inputValue}"</h1>
+        <p className="text-white/40 text-sm mt-1">Ditemukan {items.length} anime di halaman {currentPage}</p>
       </div>
-    </Suspense>
+
+      {items.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {items.map((anime, i) => (
+            <AnimeCard key={`search-${anime.slug}-${i}`} anime={anime} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 text-white/40">
+          Tidak ada anime yang cocok dengan pencarian Anda.
+        </div>
+      )}
+
+      {items.length > 0 && (
+        <Pagination currentPage={currentPage} hasNext={hasNext} basePath={`/search?q=${encodeURIComponent(inputValue)}`} />
+      )}
+    </div>
   );
 }
