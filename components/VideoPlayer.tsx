@@ -26,11 +26,11 @@ export default function VideoPlayer({
       {/* Video Player Section */}
       <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative border border-slate-800">
         {activeIframe ? (
-          <iframe 
-            src={activeIframe} 
-            allowFullScreen 
+          <iframe
+            src={activeIframe}
+            allowFullScreen
             className="w-full h-full border-0 absolute inset-0"
-            referrerPolicy="origin"
+            referrerPolicy="no-referrer"
           ></iframe>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-4">
