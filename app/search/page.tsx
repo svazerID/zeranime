@@ -4,7 +4,7 @@ import { getSearch } from '@/lib/scraper';
 import { AnimeCard } from '@/components/AnimeCard';
 import { Pagination } from '@/components/Pagination';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 
 export default function SearchPage() {
@@ -14,6 +14,9 @@ export default function SearchPage() {
   const q = searchParams.get('q') || '';
   const page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
   const [inputValue, setInputValue] = useState(q);
+  const [results, setResults] = useState<{ items: any[]; currentPage: number; hasNext: boolean } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +28,38 @@ export default function SearchPage() {
       router.push(`${pathname}?${params.toString()}`);
     }
   };
+
+  // Fetch search results when q or page changes
+  useEffect(() => {
+    if (!q) {
+      setResults(null);
+      return;
+    }
+    let cancelled = false;
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getSearch(q, page);
+        if (!cancelled) {
+          setResults(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError('Failed to fetch search results');
+          console.error(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+    fetchData();
+    return () => {
+      cancelled = true;
+    };
+  }, [q, page]);
 
   if (!q) {
     return (
@@ -53,8 +88,26 @@ export default function SearchPage() {
     );
   }
 
-  // Fetch search results
-  const { items, currentPage, hasNext } = await getSearch(q, page);
+  if (loading && !results) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <p className="text-white/40">Mencari...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <p className="text-white/40">{error}</p>
+        <button onClick={() => window.location.reload()} className="mt-2 px-4 py-2 bg-white/10 text-white rounded hover:bg-white/20">
+          Coba lagi
+        </button>
+      </div>
+    );
+  }
+
+  const { items, currentPage, hasNext } = results ?? { items: [], currentPage: 1, hasNext: false };
 
   return (
     <div className="flex flex-col gap-6">
