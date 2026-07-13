@@ -59,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </p>
                 <p>
                   This site does not store any files on our server, we only linked to the media which is hosted on 3rd party services.<br/>
-                  Powered by SANN404 FORUM GROUP. All Rights Reserved
+                  Powered by SVAZER THE GREAT. All Rights Reserved
                 </p>
               </div>
             </div>
