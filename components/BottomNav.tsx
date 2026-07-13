@@ -19,7 +19,7 @@ export function BottomNav() {
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-white/10 bg-[#0a0c10]/95 backdrop-blur-lg pb-[env(safe-area-inset-bottom)]">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-white/10 bg-[#0a0c10] pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-5">
         {items.map(({ name, href, icon: Icon }) => {
           const active = isActive(href);
