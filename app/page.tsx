@@ -1,11 +1,27 @@
-import { 
+import {
   getHome, getTop, getPopular, getUpcoming, getMovies,
   getAction, getRomance, getComedy, getAdventure, getSciFi, getFantasy, getNew
 } from '@/lib/scraper';
+import Link from 'next/link';
 import { AnimeCard } from '@/components/AnimeCard';
 import { Pagination } from '@/components/Pagination';
 import { HorizontalScroller } from '@/components/HorizontalScroller';
 import { HeroSpotlight } from '@/components/HeroSpotlight';
+
+const GENRE_CHIPS = [
+  { name: 'Action', slug: 'action' },
+  { name: 'Romance', slug: 'romance' },
+  { name: 'Comedy', slug: 'comedy' },
+  { name: 'Adventure', slug: 'adventure' },
+  { name: 'Fantasy', slug: 'fantasy' },
+  { name: 'Sci-Fi', slug: 'sci-fi' },
+  { name: 'Isekai', slug: 'isekai' },
+  { name: 'Shounen', slug: 'shounen' },
+  { name: 'Seinen', slug: 'seinen' },
+  { name: 'Drama', slug: 'drama' },
+  { name: 'Supernatural', slug: 'supernatural' },
+  { name: 'School', slug: 'school' },
+];
 
 export default async function HomePage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const searchParams = await props.searchParams;
@@ -62,14 +78,36 @@ export default async function HomePage(props: { searchParams?: Promise<{ [key: s
           {heroItems.length > 0 && (
             <HeroSpotlight items={heroItems} />
           )}
+
+          {/* Genre quick-jump chips */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar edge-fade-x -mt-2 px-1 pb-1">
+            {GENRE_CHIPS.map((g) => (
+              <Link
+                key={g.slug}
+                href={`/genre/${g.slug}`}
+                className="shrink-0 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-white/70 transition-all hover:border-[#a78bfa]/50 hover:bg-[#7c3aed]/15 hover:text-white active:scale-95"
+              >
+                {g.name}
+              </Link>
+            ))}
+          </div>
+
           {extraSections.map((section, idx) => {
             if (!section.items || section.items.length === 0) return null;
+            const ranked = section.title === 'Most Viewed';
             return (
               <section key={idx} className="reveal" style={{ '--i': idx } as React.CSSProperties}>
                 <HorizontalScroller title={section.title} viewAllHref={section.href}>
-                  {section.items.slice(0, 15).map((anime, i) => (
-                    <div key={`${section.title}-${i}`} className="snap-start min-w-[140px] w-[140px] md:min-w-[180px] md:w-[180px] shrink-0">
-                      <AnimeCard anime={anime} />
+                  {section.items.slice(0, ranked ? 10 : 15).map((anime, i) => (
+                    <div
+                      key={`${section.title}-${i}`}
+                      className={`snap-start shrink-0 ${
+                        ranked
+                          ? 'min-w-[190px] w-[190px] md:min-w-[240px] md:w-[240px]'
+                          : 'min-w-[140px] w-[140px] md:min-w-[180px] md:w-[180px]'
+                      }`}
+                    >
+                      <AnimeCard anime={anime} rank={ranked ? i + 1 : undefined} />
                     </div>
                   ))}
                 </HorizontalScroller>

@@ -3,14 +3,22 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, Menu, X, Bell } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,9 +39,15 @@ export function Navbar() {
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-white/10 glass supports-[backdrop-filter]:bg-[#0a0c10]/70 bg-[#0a0c10]">
+    <nav
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? 'border-b border-white/10 glass supports-[backdrop-filter]:bg-[#0a0c10]/70 bg-[#0a0c10] shadow-lg shadow-black/30'
+          : 'border-b border-transparent bg-gradient-to-b from-[#06060b]/90 to-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20">
+        <div className={`flex justify-between items-center transition-all duration-300 ${scrolled ? 'h-14 md:h-16' : 'h-16 md:h-20'}`}>
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group">
               <Image

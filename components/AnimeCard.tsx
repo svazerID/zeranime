@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { PlayCircle, Bookmark, Captions, Mic } from 'lucide-react';
+import { Play, Bookmark, Captions, Mic } from 'lucide-react';
 import type { AnimeItem } from '@/lib/scraper';
 
 const resolvePoster = (poster: string | null) => {
@@ -11,67 +11,91 @@ const resolvePoster = (poster: string | null) => {
   return `https:${poster}`;
 };
 
-export function AnimeCard({ anime }: { anime: AnimeItem }) {
+export function AnimeCard({ anime, rank }: { anime: AnimeItem; rank?: number }) {
+  const href = anime.link || `/anime/${anime.slug}`;
+  const poster = resolvePoster(anime.poster);
+
   return (
-    <Link href={anime.link || `/anime/${anime.slug}`} className="group relative flex flex-col gap-2 transition-transform duration-300 hover:-translate-y-1">
-      <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-neutral-900 ring-1 ring-white/5 transition-all duration-300 group-hover:ring-[#a78bfa]/50 group-hover:shadow-xl group-hover:shadow-[#7c3aed]/20">
-        {anime.poster ? (
-          <Image
-            src={resolvePoster(anime.poster)!}
-            alt={anime.title}
-            fill
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm text-white/30">
-            No Image
+    <div className="relative flex items-end">
+      {typeof rank === 'number' && (
+        <span
+          className="rank-number shrink-0 -mr-4 md:-mr-6 text-[5.5rem] md:text-[7rem] leading-none select-none"
+          aria-hidden
+        >
+          {rank}
+        </span>
+      )}
+
+      <Link
+        href={href}
+        className="xpand group relative block w-full origin-bottom overflow-hidden rounded-xl bg-[#101019] ring-1 ring-white/10"
+      >
+        {/* Poster */}
+        <div className="relative aspect-[2/3] w-full overflow-hidden">
+          {poster ? (
+            <Image
+              src={poster}
+              alt={anime.title}
+              fill
+              sizes="(max-width: 768px) 45vw, (max-width: 1200px) 22vw, 190px"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-sm text-white/30">
+              No Image
+            </div>
+          )}
+
+          {/* Constant bottom scrim for legibility */}
+          <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/80 to-transparent" />
+
+          {/* Sub / Dub badges */}
+          <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+            {anime.subEpisodes > 0 && (
+              <span className="flex items-center gap-1 rounded-md bg-[#7c3aed]/90 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur">
+                <Captions className="w-3 h-3" /> {anime.subEpisodes}
+              </span>
+            )}
+            {anime.dubEpisodes > 0 && (
+              <span className="flex items-center gap-1 rounded-md bg-[#66c0ff]/90 px-1.5 py-0.5 text-[10px] font-bold text-black backdrop-blur">
+                <Mic className="w-3 h-3" /> {anime.dubEpisodes}
+              </span>
+            )}
           </div>
-        )}
 
-        {/* Play Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center pointer-events-none">
-             <span className="flex items-center justify-center w-12 h-12 rounded-full bg-[#7c3aed]/90 backdrop-blur scale-75 group-hover:scale-100 transition-transform duration-300 shadow-lg shadow-[#7c3aed]/40">
-               <PlayCircle className="w-7 h-7 text-white" />
-             </span>
+          {/* Type chip bottom-left, always visible */}
+          <span className="absolute bottom-2 left-2 rounded bg-black/50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/80 backdrop-blur">
+            {anime.type || 'Anime'}
+          </span>
         </div>
 
-        {/* Top left Bookmark */}
-        <div className="absolute top-2 left-2 flex items-center justify-center w-7 h-7 bg-black/50 backdrop-blur rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-           <Bookmark className="w-4 h-4 text-white" />
+        {/* Title (always visible) */}
+        <div className="px-2.5 pt-2 pb-2.5">
+          <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug text-[#f0f0f0] transition-colors group-hover:text-[#a78bfa]">
+            {anime.title}
+          </h3>
         </div>
 
-        {/* Top right Badge - Sub/Dub info */}
-        <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
-          {anime.subEpisodes > 0 && (
-            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-[#B0E3AF]/90 backdrop-blur text-[10px] text-black font-bold rounded-md">
-              <Captions className="w-3 h-3" /> {anime.subEpisodes}
-            </span>
-          )}
-          {anime.dubEpisodes > 0 && (
-            <span className="flex items-center gap-1 px-1.5 py-0.5 bg-[#66c0ff]/90 backdrop-blur text-[10px] text-black font-bold rounded-md">
-              <Mic className="w-3 h-3" /> {anime.dubEpisodes}
-            </span>
-          )}
+        {/* Hover-expand drawer (desktop only via CSS) */}
+        <div className="xpand-drawer px-2.5">
+          <div className="xpand-drawer-inner">
+            <div className="flex items-center gap-2 pb-3 pt-0.5">
+              <span className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] py-1.5 text-xs font-bold text-white">
+                <Play className="w-3.5 h-3.5 fill-white" /> Watch
+              </span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-white/70">
+                <Bookmark className="w-3.5 h-3.5" />
+              </span>
+            </div>
+            {(anime.episode || anime.status) && (
+              <p className="pb-2.5 text-[11px] font-medium text-white/45">
+                {anime.episode || anime.status}
+              </p>
+            )}
+          </div>
         </div>
-
-        {/* Bottom meta on hover */}
-        <div className="absolute inset-x-0 bottom-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-             <div className="flex justify-between items-center text-[11px] w-full text-white font-medium">
-                 <span className="truncate rounded bg-black/40 backdrop-blur px-1.5 py-0.5">{anime.type || 'Anime'}</span>
-                 {anime.totalEpisodes > 0 && <span className="text-[#a78bfa] ml-2 shrink-0 rounded bg-black/40 backdrop-blur px-1.5 py-0.5">{anime.totalEpisodes} eps</span>}
-             </div>
-        </div>
-      </div>
-      <div className="px-0.5 mt-1">
-        <h3 className="line-clamp-2 text-sm font-semibold text-[#f0f0f0] group-hover:text-[#a78bfa] transition-colors leading-snug">
-          {anime.title}
-        </h3>
-        <p className="text-xs text-white/40 mt-0.5 truncate font-medium">
-          {anime.type || 'Anime'}
-        </p>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }

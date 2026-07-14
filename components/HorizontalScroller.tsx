@@ -53,7 +53,7 @@ export function HorizontalScroller({
 
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory no-scrollbar"
+        className="flex overflow-x-auto gap-3 md:gap-4 px-1 pt-2 pb-6 snap-x snap-mandatory no-scrollbar edge-fade-x"
       >
         {children}
       </div>

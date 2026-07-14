@@ -140,6 +140,66 @@ body {
   -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 
+/* Soft fade on the left/right edges of horizontal rails (desktop) */
+@media (min-width: 640px) {
+  .edge-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 28px,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 28px,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+  }
+}
+
+/* Big outlined rank numeral behind Top-10 style cards */
+.rank-number {
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 3px rgba(255, 255, 255, 0.22);
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  user-select: none;
+}
+
+/* Crunchyroll-style hover-expand card. The info drawer is clipped until hover
+   reveals it, and the whole card lifts above its neighbours. Only engages on
+   real hover-capable pointers so mobile taps navigate straight through. */
+@media (hover: hover) and (pointer: fine) {
+  .xpand {
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.28s ease;
+  }
+  .xpand:hover {
+    transform: translateY(-4px) scale(1.045);
+    z-index: 30;
+    box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.75),
+      0 0 0 1px rgba(167, 139, 250, 0.4);
+  }
+  .xpand-drawer {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.28s ease, opacity 0.2s ease;
+  }
+  .xpand:hover .xpand-drawer {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .xpand-drawer > .xpand-drawer-inner {
+    overflow: hidden;
+  }
+}
+
 /* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .reveal,
