@@ -74,6 +74,58 @@ also correct for multi-word/season slugs (`grand-blue-season-3`,
 `world-is-dancing`, long light-novel titles). The stripped slug matches the
 `/series/<slug>/` detail endpoint.
 
+## Diagnosing DUPLICATE / identical sections (not a regex bug)
+
+Symptom the user reports: several homepage rows (e.g. "Latest Updated", "Most
+Viewed", "New Release", "Upcoming", "Top Movies") show the **same** anime. Two
+independent causes stack up — check both:
+
+1. **Scraper functions alias each other.** In `lib/scraper.ts`, several public
+   functions just call another: `getNew`→`getHome`, `getUpcoming`→`getTop`,
+   `getMovies`→`getTop`. So different-titled sections pull the exact same source.
+   Grep the function bodies before assuming the endpoints differ.
+2. **Upstream endpoints went dead (301→homepage).** As of 2026-07, otakudesu.fit
+   **301-redirects** `/ongoing-anime/`, `/complete-anime/`, `/anime-list/`,
+   `/type/movie/`, and `/genres/movie/` straight to the homepage. So even
+   `getHome` (ongoing) and `getTop` (complete) fetch **identical** content now.
+   `?order=popular` on the homepage is **ignored** (same as home).
+
+### How to detect a dead endpoint (curl, no follow)
+A 301→homepage is invisible with `curl -sL` (it silently lands on `/` which also
+has cards). Check the `Location` header WITHOUT following:
+```bash
+UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+curl -s -D - -o /dev/null -H "Referer: https://otakudesu.fit" -A "$UA" \
+  "https://otakudesu.fit/complete-anime/" | grep -iE "^(HTTP|location)"
+# HTTP/2 301  +  location: https://otakudesu.fit  → endpoint is DEAD
+```
+Also compare the first few titles across candidate endpoints; if they're byte-for-
+byte identical, they collapsed to the same page.
+
+### The fix: the live `/series/` filter endpoint
+The homepage "View All" link reveals the real, still-working listing endpoint:
+`/series/?status=&type=&order=`. It returns genuinely DISTINCT data per filter
+(verified 2026-07):
+- `order=update` → Latest Updated (newest episode releases)
+- `order=popular` → Most Viewed (real popularity ranking — differs from home)
+- `order=latest` → New Release (newest series)
+- `type=Movie&order=update` → Top Movies (real movies)
+- `status=Upcoming&order=update` → Upcoming (real upcoming)
+- `status=Completed` also works.
+Pagination: `/series/page/N/?status=&type=&order=…`. Cards use the SAME
+`<div class="bsx">…<h2 itemprop="headline">Title</h2>` structure that
+`parseAnimeListing` already matches, so only the URL builders need changing — the
+parser is fine. Point `getTop`/`getPopular`/`getUpcoming`/`getMovies`/`getNew` at
+the right `/series/` query instead of aliasing each other. This is a data-layer
+fix only (no UI/hooks/routing changes) — safe for the ecosystem.
+
+### `/jadwal-rilis/` is a different structure
+The schedule page (`/jadwal-rilis/`, ~124 cards) uses a DIFFERENT card markup:
+`<span class='epx cndwn' …>` (single-quoted, countdown), `<img width=… src=…>`
+with `src` after `width`, and title in `<div class="tt">Title</div>` (no
+`<h2 itemprop="headline">`). `parseAnimeListing` will NOT match it as-is — needs a
+dedicated parser if you scrape the schedule.
+
 ## Confirmed facts about the source site
 - otakudesu is behind Cloudflare but serves scrapable HTML to a normal UA
   (`cf-cache-status: DYNAMIC`, not a challenge). 0-results in prod is a parser

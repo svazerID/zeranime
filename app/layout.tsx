@@ -54,8 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
               <div className="text-[#a9b7c6] space-y-4 text-[15px] leading-relaxed mx-auto max-w-4xl">
                 <p>
-                  <span className="text-[#a78bfa]">zeranime.vercel.app</span> is top of free streaming website, where to watch anime online free without registration required. 
-                  With a big database and great features, we're confident. zeranime.vercel.app is the best free anime online website in the space that you can't simply miss!
+                  <span className="text-[#a78bfa]">Zeranime</span> is top of free streaming website, where to watch anime online free without registration required. 
+                  With a big database and great features, we're confident. Zeranime is the best free anime online website in the space that you can't simply miss!
                 </p>
                 <p>
                   This site does not store any files on our server, we only linked to the media which is hosted on 3rd party services.<br/>
