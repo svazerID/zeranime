@@ -150,33 +150,50 @@ function parseAnimeListing(html: string): AnimeItem[] {
 
 // ── Public API ──
 
+// Upstream's old /ongoing-anime/ and /complete-anime/ endpoints now 301 to the
+// homepage, collapsing every section into the same list. The filterable
+// /series/ endpoint is the only source that still returns genuinely distinct
+// data per (status, type, order), so all list sections route through it.
+interface SeriesFilter { status?: string; type?: string; order?: string }
+
+async function getSeriesList(filter: SeriesFilter, page: number = 1): Promise<AnimeListResponse> {
+  const params = new URLSearchParams({
+    status: filter.status ?? '',
+    type: filter.type ?? '',
+    order: filter.order ?? 'update',
+  });
+  const base = page === 1 ? `${BASE_URL}/series/` : `${BASE_URL}/series/page/${page}/`;
+  const html = await fetchPage(`${base}?${params.toString()}`);
+  const items = parseAnimeListing(html);
+  return { items, currentPage: page, hasNext: items.length > 0 };
+}
+
 export async function getHome(page: number = 1): Promise<AnimeListResponse> {
-  const url = page === 1 ? `${BASE_URL}/ongoing-anime/` : `${BASE_URL}/ongoing-anime/page/${page}/`;
+  // Homepage "Latest Release" list; supports plain /page/N/ pagination.
+  const url = page === 1 ? `${BASE_URL}/` : `${BASE_URL}/page/${page}/`;
   const html = await fetchPage(url);
   const items = parseAnimeListing(html);
   return { items, currentPage: page, hasNext: items.length > 0 };
 }
 
 export async function getNew(page: number = 1): Promise<AnimeListResponse> {
-  return getHome(page);
+  return getSeriesList({ order: 'latest' }, page);
 }
 
 export async function getTop(page: number = 1): Promise<AnimeListResponse> {
-  // Otakudesu complete anime
-  const url = page === 1 ? `${BASE_URL}/complete-anime/` : `${BASE_URL}/complete-anime/page/${page}/`;
-  const html = await fetchPage(url);
-  const items = parseAnimeListing(html);
-  return { items, currentPage: page, hasNext: items.length > 0 };
+  return getSeriesList({ order: 'popular' }, page);
 }
 
 export async function getPopular(page: number = 1): Promise<AnimeListResponse> {
   return getTop(page);
 }
 
-// Otakudesu doesn't have upcoming/movies/etc specific API easily accessible without heavy scraping
-// We'll fallback to complete for these to avoid empty sections
-export async function getUpcoming(page: number = 1): Promise<AnimeListResponse> { return getTop(page); }
-export async function getMovies(page: number = 1): Promise<AnimeListResponse> { return getTop(page); }
+export async function getUpcoming(page: number = 1): Promise<AnimeListResponse> {
+  return getSeriesList({ status: 'Upcoming', order: 'update' }, page);
+}
+export async function getMovies(page: number = 1): Promise<AnimeListResponse> {
+  return getSeriesList({ type: 'Movie', order: 'update' }, page);
+}
 export async function getAction(page: number = 1): Promise<AnimeListResponse> { return getGenre('action', page); }
 export async function getRomance(page: number = 1): Promise<AnimeListResponse> { return getGenre('romance', page); }
 export async function getComedy(page: number = 1): Promise<AnimeListResponse> { return getGenre('comedy', page); }
