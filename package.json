@@ -2,6 +2,13 @@
   "name": "ai-studio-applet",
   "version": "0.1.0",
   "private": true,
+  "description": "ZerAnime - Anime streaming app with Next.js 15, React 19, Tailwind CSS v4",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/svazerID/zeranime.git"
+  },
+  "homepage": "https://zeranime.vercel.app",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
