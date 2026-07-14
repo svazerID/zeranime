@@ -3,13 +3,21 @@ import Link from 'next/link';
 import { PlayCircle, Bookmark, Captions, Mic } from 'lucide-react';
 import type { AnimeItem } from '@/lib/scraper';
 
+const resolvePoster = (poster: string | null) => {
+  if (!poster) return null;
+  if (poster.startsWith('http://') || poster.startsWith('https://')) return poster;
+  if (poster.startsWith('//')) return `https:${poster}`;
+  // fallback for relative paths (should not happen)
+  return `https:${poster}`;
+};
+
 export function AnimeCard({ anime }: { anime: AnimeItem }) {
   return (
     <Link href={anime.link || `/anime/${anime.slug}`} className="group relative flex flex-col gap-2">
       <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-neutral-900 ring-1 ring-white/5 transition-all duration-300 group-hover:ring-[#ff9d00]/40 group-hover:shadow-lg group-hover:shadow-black/40">
         {anime.poster ? (
           <Image
-            src={anime.poster.startsWith('http') ? anime.poster : `https:${anime.poster}`}
+            src={resolvePoster(anime.poster)!}
             alt={anime.title}
             fill
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"

@@ -8,7 +8,10 @@ import type { AnimeItem } from '@/lib/scraper';
 
 const resolvePoster = (poster: string | null) => {
   if (!poster) return null;
-  return poster.startsWith('http') ? poster : `https:${poster}`;
+  if (poster.startsWith('http://') || poster.startsWith('https://')) return poster;
+  if (poster.startsWith('//')) return `https:${poster}`;
+  // fallback for relative paths (should not happen)
+  return `https:${poster}`;
 };
 
 export function HeroSpotlight({ items }: { items: AnimeItem[] }) {
