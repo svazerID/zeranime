@@ -23,7 +23,7 @@ export function SearchBox({ initialQuery = '' }: { initialQuery?: string }) {
         placeholder="Cari anime..."
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="pl-10 pr-4 py-3 rounded-full bg-white/5 border border-white/10 focus:border-[#ff9d00] focus:ring-1 focus:ring-[#ff9d00] focus:outline-none text-sm w-full transition-all text-[#e0e0e0] placeholder:text-white/30"
+        className="pl-10 pr-4 py-3 rounded-full bg-white/5 border border-white/10 focus:border-[#a78bfa] focus:ring-1 focus:ring-[#a78bfa] focus:outline-none text-sm w-full transition-all text-[#e0e0e0] placeholder:text-white/30"
       />
       <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
     </form>

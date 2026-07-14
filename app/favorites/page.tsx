@@ -14,7 +14,7 @@ export default function FavoritesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-2 mb-4 border-b border-white/10 pb-4">
-        <Heart className="text-[#ff9d00] fill-[#ff9d00]" />
+        <Heart className="text-[#a78bfa] fill-[#a78bfa]" />
         <h1 className="text-2xl font-bold text-white">Your Favorites</h1>
       </div>
 

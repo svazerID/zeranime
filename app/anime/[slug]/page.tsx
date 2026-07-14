@@ -51,8 +51,8 @@ export default async function AnimeDetailPage(props: { params: Promise<{ slug: s
             )}
             <div className="flex flex-wrap gap-3 items-center text-sm font-medium text-white/60">
               {anime.rating && (
-                <div className="flex items-center gap-1 text-[#ff9d00] bg-[#ff9d00]/10 px-2 py-0.5 rounded">
-                  <Star className="w-4 h-4 fill-[#ff9d00]" /> {anime.rating}
+                <div className="flex items-center gap-1 text-[#a78bfa] bg-[#a78bfa]/10 px-2 py-0.5 rounded">
+                  <Star className="w-4 h-4 fill-[#a78bfa]" /> {anime.rating}
                 </div>
               )}
               {anime.status && (
@@ -109,13 +109,13 @@ export default async function AnimeDetailPage(props: { params: Promise<{ slug: s
               <Link
                 key={ep.slug}
                 href={`/episode/${ep.slug}`}
-                className="flex items-center gap-4 p-3 rounded-xl border border-white/10 bg-[#0d1015] hover:border-[#ff9d00]/50 transition-all group"
+                className="flex items-center gap-4 p-3 rounded-xl border border-white/10 bg-[#0d1015] hover:border-[#a78bfa]/50 transition-all group"
               >
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 text-white/60 font-bold group-hover:bg-gradient-to-br group-hover:from-[#ff6a00] group-hover:to-[#ff9d00] group-hover:text-black transition-colors">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 text-white/60 font-bold group-hover:bg-gradient-to-br group-hover:from-[#7c3aed] group-hover:to-[#a78bfa] group-hover:text-white transition-colors">
                   {ep.number || '?'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-bold text-white truncate group-hover:text-[#ff9d00] transition-colors">
+                  <h4 className="text-sm font-bold text-white truncate group-hover:text-[#a78bfa] transition-colors">
                     {ep.title || `Episode ${ep.number}`}
                   </h4>
                   <div className="flex items-center gap-2 mt-1">

@@ -24,7 +24,7 @@ export function Pagination({ currentPage, hasNext, basePath }: PaginationProps) 
       {currentPage > 1 ? (
         <Link
           href={getUrl(prevPage)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-[#0d1015] text-white/60 hover:text-white hover:border-[#ff9d00]/50 transition-colors font-medium text-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-[#0d1015] text-white/60 hover:text-white hover:border-[#a78bfa]/50 transition-colors font-medium text-sm"
         >
           <ChevronLeft className="w-4 h-4" /> Previous
         </Link>
@@ -41,7 +41,7 @@ export function Pagination({ currentPage, hasNext, basePath }: PaginationProps) 
       {hasNext ? (
         <Link
           href={getUrl(nextPage)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-[#0d1015] text-white/60 hover:text-white hover:border-[#ff9d00]/50 transition-colors font-medium text-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-[#0d1015] text-white/60 hover:text-white hover:border-[#a78bfa]/50 transition-colors font-medium text-sm"
         >
           Next <ChevronRight className="w-4 h-4" />
         </Link>

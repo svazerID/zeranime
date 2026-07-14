@@ -65,7 +65,7 @@ export default async function HomePage(props: { searchParams?: Promise<{ [key: s
           {extraSections.map((section, idx) => {
             if (!section.items || section.items.length === 0) return null;
             return (
-              <section key={idx}>
+              <section key={idx} className="reveal" style={{ '--i': idx } as React.CSSProperties}>
                 <HorizontalScroller title={section.title} viewAllHref={section.href}>
                   {section.items.slice(0, 15).map((anime, i) => (
                     <div key={`${section.title}-${i}`} className="snap-start min-w-[140px] w-[140px] md:min-w-[180px] md:w-[180px] shrink-0">

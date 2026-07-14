@@ -49,17 +49,17 @@ export function HeroSpotlight({ items }: { items: AnimeItem[] }) {
                 fill
                 priority={i === 0}
                 sizes="100vw"
-                className="object-cover object-center"
+                className={`object-cover object-center ${isActive ? 'animate-kenburns' : ''}`}
                 referrerPolicy="no-referrer"
               />
             )}
             {/* Gradients for legibility */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050608] via-[#050608]/70 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#050608] via-[#050608]/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#06060b] via-[#06060b]/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#06060b] via-[#06060b]/40 to-transparent" />
 
             <div className="absolute inset-0 flex items-end md:items-center">
-              <div className="w-full md:max-w-2xl px-5 md:px-10 pb-8 md:pb-0 space-y-3 md:space-y-5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#ff6a00]/15 border border-[#ff6a00]/30 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[#ff9d00]">
+              <div className={`w-full md:max-w-2xl px-5 md:px-10 pb-8 md:pb-0 space-y-3 md:space-y-5 ${isActive ? 'animate-fade-in-up' : ''}`}>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#7c3aed]/20 border border-[#7c3aed]/40 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[#c084fc]">
                   Spotlight
                 </span>
                 <h1 className="text-2xl md:text-5xl font-black leading-tight text-white line-clamp-2 drop-shadow-lg">
@@ -82,9 +82,9 @@ export function HeroSpotlight({ items }: { items: AnimeItem[] }) {
                 <div className="flex items-center gap-3 pt-1">
                   <Link
                     href={anime.link || `/anime/${anime.slug}`}
-                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#ff6a00] to-[#ff9d00] px-5 md:px-6 py-2.5 text-sm font-bold text-black shadow-lg shadow-[#ff6a00]/25 hover:brightness-110 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] px-5 md:px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#7c3aed]/30 hover:brightness-110 active:scale-95 transition-all"
                   >
-                    <Play className="w-4 h-4 fill-black" /> Watch Now
+                    <Play className="w-4 h-4 fill-white" /> Watch Now
                   </Link>
                   <Link
                     href={anime.link || `/anime/${anime.slug}`}
@@ -108,7 +108,7 @@ export function HeroSpotlight({ items }: { items: AnimeItem[] }) {
               aria-label={`Go to slide ${i + 1}`}
               onClick={() => setActive(i)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === active ? 'w-6 bg-[#ff9d00]' : 'w-1.5 bg-white/40 hover:bg-white/60'
+                i === active ? 'w-6 bg-[#a78bfa]' : 'w-1.5 bg-white/40 hover:bg-white/60'
               }`}
             />
           ))}

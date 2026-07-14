@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #050608;
-  --bg-soft: #0a0c10;
-  --bg-card: #0d1015;
+  --bg: #06060b;
+  --bg-soft: #0b0b14;
+  --bg-card: #101019;
   --border: rgba(255, 255, 255, 0.08);
-  --accent: #ff6a00;
-  --accent-2: #ff9d00;
+  --accent: #7c3aed;
+  --accent-2: #a78bfa;
+  --accent-3: #c084fc;
   --accent-blue: #2f9bff;
   --accent-blue-2: #66c0ff;
 }
@@ -34,7 +35,7 @@ body {
 
 /* Selection */
 ::selection {
-  background: rgba(255, 106, 0, 0.3);
+  background: rgba(124, 58, 237, 0.4);
   color: #fff;
 }
 
@@ -68,7 +69,7 @@ body {
 
 /* Reusable gradient text for brand wordmark */
 .brand-gradient {
-  background: linear-gradient(100deg, var(--accent-blue-2) 0%, #fff 35%, var(--accent-2) 70%, var(--accent) 100%);
+  background: linear-gradient(100deg, var(--accent-blue-2) 0%, #fff 32%, var(--accent-3) 66%, var(--accent) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -94,6 +95,60 @@ body {
 }
 .animate-fade-in-up {
   animation: fadeInUp 0.5s ease both;
+}
+
+/* Staggered reveal — set --i on each item for a cascading entrance */
+.reveal {
+  opacity: 0;
+  animation: fadeInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* Slow Ken Burns pan/zoom for hero backdrops */
+@keyframes kenburns {
+  0% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: scale(1.18) translate3d(-1.5%, -1.5%, 0);
+  }
+}
+.animate-kenburns {
+  animation: kenburns 12s ease-out both;
+}
+
+/* Gentle floating glow orb */
+@keyframes floatGlow {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(-8px) scale(1.05);
+    opacity: 0.6;
+  }
+}
+.animate-float-glow {
+  animation: floatGlow 7s ease-in-out infinite;
+}
+
+/* Frosted glass surface used on nav bars and chips */
+.glass {
+  background: rgba(13, 13, 22, 0.72);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .animate-fade-in-up,
+  .animate-kenburns,
+  .animate-float-glow {
+    animation: none !important;
+    opacity: 1 !important;
+  }
 }
 
 /* Skeleton shimmer */

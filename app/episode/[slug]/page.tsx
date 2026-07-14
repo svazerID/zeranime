@@ -55,7 +55,7 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
         {episode.nextEpisode ? (
           <Link
             href={`/episode/${episode.nextEpisode}`}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff6a00] to-[#ff9d00] text-black hover:brightness-110 transition-all font-bold text-sm shadow-lg shadow-[#ff6a00]/20"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#7c3aed] to-[#a78bfa] text-white hover:brightness-110 transition-all font-bold text-sm shadow-lg shadow-[#7c3aed]/25"
           >
             Next Episode <ChevronRight className="w-4 h-4" />
           </Link>
@@ -73,7 +73,7 @@ export default async function EpisodePage(props: { params: Promise<{ slug: strin
                 href={`/episode/${ep.slug}`}
                 className={`p-3 rounded-xl border text-sm font-bold transition-all ${
                   ep.slug === slug
-                  ? 'border-[#ff9d00] bg-[#ff9d00]/10 text-[#ff9d00]'
+                  ? 'border-[#a78bfa] bg-[#a78bfa]/10 text-[#a78bfa]'
                   : 'border-white/10 bg-[#0d1015] hover:border-white/20 hover:bg-white/5 text-white/60 hover:text-white'
                 }`}
               >

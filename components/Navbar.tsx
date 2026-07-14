@@ -31,7 +31,7 @@ export function Navbar() {
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0a0c10]">
+    <nav className="sticky top-0 z-50 w-full border-b border-white/10 glass supports-[backdrop-filter]:bg-[#0a0c10]/70 bg-[#0a0c10]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
           <div className="flex items-center gap-6">
@@ -41,7 +41,7 @@ export function Navbar() {
                 alt="ZerAnime"
                 width={40}
                 height={40}
-                className="w-9 h-9 md:w-10 md:h-10 rounded-xl object-cover ring-1 ring-white/10 group-hover:ring-[#ff9d00]/40 transition-all"
+                className="w-9 h-9 md:w-10 md:h-10 rounded-xl object-cover ring-1 ring-white/10 group-hover:ring-[#a78bfa]/40 transition-all"
                 priority
               />
               <span className="brand-gradient text-xl md:text-2xl font-black tracking-tight">ZerAnime</span>
@@ -60,7 +60,7 @@ export function Navbar() {
                   >
                     {link.name}
                     {active && (
-                      <span className="absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-[#ff6a00] to-[#ff9d00]" />
+                      <span className="absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#a78bfa]" />
                     )}
                   </Link>
                 );
@@ -75,14 +75,14 @@ export function Navbar() {
                 placeholder="Search anime..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 rounded-full bg-white/5 border border-white/10 focus:border-[#ff9d00] focus:ring-1 focus:ring-[#ff9d00] focus:outline-none text-sm w-64 transition-all text-[#e0e0e0] placeholder:text-white/30"
+                className="pl-10 pr-4 py-2 rounded-full bg-white/5 border border-white/10 focus:border-[#a78bfa] focus:ring-1 focus:ring-[#a78bfa] focus:outline-none text-sm w-64 transition-all text-[#e0e0e0] placeholder:text-white/30"
               />
               <Search className="w-4 h-4 absolute left-3 text-white/30" />
             </form>
 
             <Link href="/schedule" className="relative p-2 text-white/60 hover:text-white transition-colors" title="New Episodes">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#ff6a00] rounded-full shadow shadow-[#ff6a00]/50"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#7c3aed] rounded-full shadow shadow-[#7c3aed]/50"></span>
             </Link>
 
             <button
@@ -98,14 +98,14 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#0a0c10] px-4 py-4 space-y-4 shadow-lg pb-6">
+        <div className="md:hidden border-t border-white/10 glass supports-[backdrop-filter]:bg-[#0a0c10]/80 bg-[#0a0c10] px-4 py-4 space-y-4 shadow-lg pb-6 animate-fade-in-up">
            <form onSubmit={handleSearch} className="relative flex items-center">
               <input
                 type="text"
                 placeholder="Search anime..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2.5 w-full rounded-xl bg-white/5 border border-white/10 focus:border-[#ff9d00] focus:ring-1 focus:ring-[#ff9d00] focus:outline-none text-sm text-[#e0e0e0] placeholder:text-white/30"
+                className="pl-10 pr-4 py-2.5 w-full rounded-xl bg-white/5 border border-white/10 focus:border-[#a78bfa] focus:ring-1 focus:ring-[#a78bfa] focus:outline-none text-sm text-[#e0e0e0] placeholder:text-white/30"
               />
               <Search className="w-4 h-4 absolute left-3 text-white/30" />
             </form>
