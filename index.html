@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server Maintenance</title>
+<style>
+  :root{
+    --bg-canvas:#06060b;
+    --bg-surface:#0a0c10;
+    --bg-elevated:#101019;
+    --glass-light:#ffffff1a;
+    --glass-light-strong:#ffffff26;
+    --glass-dark:#00000080;
+    --accent-1:#7c3aed;
+    --accent-2:#a78bfa;
+    --warn-bg:#f051004d;
+    --warn-border:#f0510080;
+    --success-bg:#00a54433;
+    --danger-bg:#e4001433;
+    --text-primary:#ffffff;
+    --text-muted:#8b8f9c;
+    --font-sans:'Inter',ui-sans-serif,system-ui,sans-serif;
+    --font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+    --radius-lg:.5rem;
+    --radius-xl:.75rem;
+    --radius-2xl:1rem;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    min-height:100vh;
+    background:var(--bg-canvas);
+    color:var(--text-primary);
+    font-family:var(--font-sans);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* ambient background */
+  .bg-glow{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+  }
+  .bg-glow::before,
+  .bg-glow::after{
+    content:"";
+    position:absolute;
+    width:60vw;
+    height:60vw;
+    max-width:900px;
+    max-height:900px;
+    border-radius:50%;
+    filter:blur(120px);
+    opacity:.25;
+  }
+  .bg-glow::before{
+    background:var(--accent-1);
+    top:-15%;
+    left:-10%;
+    animation:drift1 18s ease-in-out infinite alternate;
+  }
+  .bg-glow::after{
+    background:var(--accent-2);
+    bottom:-20%;
+    right:-10%;
+    animation:drift2 22s ease-in-out infinite alternate;
+  }
+  @keyframes drift1{
+    from{transform:translate(0,0) scale(1);}
+    to{transform:translate(6%,4%) scale(1.1);}
+  }
+  @keyframes drift2{
+    from{transform:translate(0,0) scale(1);}
+    to{transform:translate(-6%,-4%) scale(1.05);}
+  }
+
+  .grid-overlay{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background-image:
+      linear-gradient(#ffffff08 1px, transparent 1px),
+      linear-gradient(90deg, #ffffff08 1px, transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(circle at 50% 40%, black, transparent 75%);
+    pointer-events:none;
+  }
+
+  nav{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:calc(4px*4) calc(4px*8);
+    background:#06060b80;
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--glass-light);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:.01em;
+  }
+  .brand-dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:linear-gradient(to bottom right in oklab, var(--accent-1), var(--accent-2));
+    box-shadow:0 0 0 4px #7c3aed26;
+  }
+  .nav-status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:.75rem;
+    font-weight:600;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--accent-2);
+    background:var(--warn-bg);
+    border:1px solid var(--warn-border);
+    padding:6px 14px;
+    border-radius:999px;
+  }
+  .pulse-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#ff9a4d;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; box-shadow:0 0 0 0 #ff9a4d66;}
+    50%{opacity:.5; box-shadow:0 0 0 6px #ff9a4d00;}
+  }
+
+  main{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:720px;
+    padding:32px;
+    text-align:center;
+  }
+
+  .panel{
+    background:var(--bg-surface);
+    border:1px solid var(--glass-light);
+    border-radius:var(--radius-2xl);
+    padding:56px 48px;
+    box-shadow:0 24px 50px -12px #000000bf;
+    position:relative;
+    overflow:hidden;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--accent-2), transparent);
+    opacity:.6;
+  }
+
+  .icon-orbit{
+    width:88px;
+    height:88px;
+    margin:0 auto 28px;
+    position:relative;
+  }
+  .icon-orbit .ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    border:2px solid transparent;
+    border-top-color:var(--accent-2);
+    border-right-color:var(--accent-1);
+    animation:spin 2.6s linear infinite;
+  }
+  .icon-orbit .core{
+    position:absolute;
+    inset:22px;
+    border-radius:50%;
+    background:linear-gradient(to bottom right in oklab, var(--accent-1), var(--accent-2));
+    box-shadow:0 0 30px #7c3aed66;
+  }
+  @keyframes spin{
+    to{transform:rotate(360deg);}
+  }
+
+  .eyebrow{
+    font-size:.75rem;
+    font-weight:600;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-bottom:14px;
+  }
+
+  h1{
+    font-size:2.25rem;
+    line-height:calc(2.5/2.25);
+    font-weight:800;
+    letter-spacing:-.01em;
+    margin-bottom:16px;
+    background:linear-gradient(to bottom right in oklab, #ffffff, #cfc7f7);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+
+  p.desc{
+    font-size:1rem;
+    line-height:1.625;
+    color:var(--text-muted);
+    max-width:480px;
+    margin:0 auto 36px;
+  }
+
+  .countdown{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-bottom:36px;
+    flex-wrap:wrap;
+  }
+  .time-block{
+    background:var(--glass-light);
+    border:1px solid var(--glass-light-strong);
+    border-radius:var(--radius-xl);
+    padding:16px 18px;
+    min-width:78px;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+  }
+  .time-block .num{
+    font-family:var(--font-mono);
+    font-size:1.875rem;
+    font-weight:700;
+    color:var(--text-primary);
+    line-height:1;
+  }
+  .time-block .label{
+    font-size:.7rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-top:8px;
+  }
+
+  .progress-wrap{
+    text-align:left;
+    margin-bottom:36px;
+  }
+  .progress-meta{
+    display:flex;
+    justify-content:space-between;
+    font-size:.8rem;
+    color:var(--text-muted);
+    margin-bottom:8px;
+  }
+  .progress-meta span:last-child{
+    color:var(--accent-2);
+    font-weight:600;
+  }
+  .progress-track{
+    height:8px;
+    border-radius:999px;
+    background:var(--glass-light);
+    overflow:hidden;
+    border:1px solid var(--glass-light-strong);
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    transition:width .6s ease;
+    box-shadow:0 0 12px #a78bfa66;
+  }
+
+  .actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+    font-weight:600;
+    font-size:.9rem;
+    border-radius:var(--radius-xl);
+    padding:12px 26px;
+    transition:transform .15s ease, filter .15s ease, background .15s ease;
+  }
+  .btn-primary{
+    background:linear-gradient(to bottom right in oklab, var(--accent-1), var(--accent-2));
+    color:#fff;
+  }
+  .btn-primary:hover{
+    filter:brightness(1.08);
+    transform:scale(1.02);
+  }
+  .btn-ghost{
+    background:var(--glass-light);
+    color:#fff;
+    border:1px solid var(--glass-light-strong);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+  }
+  .btn-ghost:hover{
+    background:var(--glass-light-strong);
+  }
+  button:focus-visible{
+    outline:2px solid var(--accent-2);
+    outline-offset:2px;
+  }
+
+  .footnote{
+    margin-top:28px;
+    font-size:.75rem;
+    color:var(--text-muted);
+    letter-spacing:.02em;
+  }
+  .footnote code{
+    font-family:var(--font-mono);
+    color:var(--accent-2);
+  }
+
+  @media (max-width:560px){
+    .panel{padding:40px 24px;}
+    h1{font-size:1.75rem;}
+    .time-block{min-width:64px; padding:12px 10px;}
+    .time-block .num{font-size:1.4rem;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .bg-glow::before,.bg-glow::after,.icon-orbit .ring,.pulse-dot{
+      animation:none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="grid-overlay"></div>
+
+<nav>
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <span>Zeranime</span>
+  </div>
+  <div class="nav-status">
+    <span class="pulse-dot"></span>
+    Maintenance
+  </div>
+</nav>
+
+<main>
+  <div class="panel">
+    <div class="icon-orbit">
+      <div class="ring"></div>
+      <div class="core"></div>
+    </div>
+
+    <div class="eyebrow">Server sedang dalam perbaikan</div>
+    <h1>Kami sedang membenahi sesuatu</h1>
+    <p class="desc">
+      Server sedang menjalani maintenance terjadwal untuk meningkatkan performa
+      dan stabilitas layanan. Mohon maaf atas ketidaknyamanannya, kami akan
+      kembali online sesegera mungkin.
+    </p>
+
+    <div class="countdown" id="countdown">
+      <div class="time-block"><div class="num" id="cd-hours">00</div><div class="label">Jam</div></div>
+      <div class="time-block"><div class="num" id="cd-minutes">00</div><div class="label">Menit</div></div>
+      <div class="time-block"><div class="num" id="cd-seconds">00</div><div class="label">Detik</div></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span>Progres perbaikan</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="location.reload()">Coba lagi</button>
+      <button class="btn-ghost" id="notify-btn">Beri tahu saya</button>
+    </div>
+
+    <div class="footnote">
+      Status server: <code id="status-code">MAINTENANCE_MODE</code>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Target waktu maintenance selesai (ubah sesuai kebutuhan)
+  const maintenanceDurationMs = 2 * 60 * 60 * 1000; // 2 jam dari sekarang
+  const startTime = Date.now();
+  const endTime = startTime + maintenanceDurationMs;
+
+  const elHours = document.getElementById('cd-hours');
+  const elMinutes = document.getElementById('cd-minutes');
+  const elSeconds = document.getElementById('cd-seconds');
+  const elProgressFill = document.getElementById('progress-fill');
+  const elProgressPercent = document.getElementById('progress-percent');
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function tick(){
+    const now = Date.now();
+    const remaining = Math.max(0, endTime - now);
+
+    const hours = Math.floor(remaining / 3600000);
+    const minutes = Math.floor((remaining % 3600000) / 60000);
+    const seconds = Math.floor((remaining % 60000) / 1000);
+
+    elHours.textContent = pad(hours);
+    elMinutes.textContent = pad(minutes);
+    elSeconds.textContent = pad(seconds);
+
+    const elapsed = now - startTime;
+    const percent = Math.min(100, (elapsed / maintenanceDurationMs) * 100);
+    elProgressFill.style.width = percent.toFixed(1) + '%';
+    elProgressPercent.textContent = Math.floor(percent) + '%';
+
+    if(remaining <= 0){
+      clearInterval(timer);
+      document.getElementById('status-code').textContent = 'READY_TO_RELOAD';
+    }
+  }
+
+  tick();
+  const timer = setInterval(tick, 1000);
+
+  document.getElementById('notify-btn').addEventListener('click', function(){
+    this.textContent = 'Kami akan hubungi Anda ✓';
+    this.disabled = true;
+    this.style.opacity = '.7';
+    this.style.cursor = 'default';
+  });
+</script>
+
+</body>
+</html>
