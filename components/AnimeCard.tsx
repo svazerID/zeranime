@@ -11,6 +11,10 @@ const resolvePoster = (poster: string | null) => {
   return `https:${poster}`;
 };
 
+// Serve posters via our own origin so the upstream can't block them.
+const proxiedPoster = (poster: string) =>
+  `/api/asset?url=${encodeURIComponent(resolvePoster(poster)!)}`;
+
 export function AnimeCard({ anime, rank }: { anime: AnimeItem; rank?: number }) {
   const href = anime.link || `/anime/${anime.slug}`;
   const poster = resolvePoster(anime.poster);
@@ -34,12 +38,12 @@ export function AnimeCard({ anime, rank }: { anime: AnimeItem; rank?: number }) 
         <div className="relative aspect-[2/3] w-full overflow-hidden">
           {poster ? (
             <Image
-              src={poster}
+              src={proxiedPoster(poster)}
               alt={anime.title}
               fill
               sizes="(max-width: 768px) 45vw, (max-width: 1200px) 22vw, 190px"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              referrerPolicy="no-referrer"
+              unoptimized
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-white/30">

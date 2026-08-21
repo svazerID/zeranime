@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Server, Captions, Mic, AlertCircle } from 'lucide-react';
 
-export default function VideoPlayer({ 
-  defaultIframe, 
-  servers 
-}: { 
-  defaultIframe: string | null; 
-  servers: { name: string; type: string; linkId: string }[] 
+export default function VideoPlayer({
+  defaultIframe,
+  servers
+}: {
+  defaultIframe: string | null;
+  servers: { name: string; type: string; linkId: string }[]
 }) {
   const [activeIframe, setActiveIframe] = useState<string | null>(defaultIframe);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // If defaultIframe is blocked or null, fallback to the first server's iframe if available
   useEffect(() => {
@@ -30,6 +31,10 @@ export default function VideoPlayer({
       <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative border border-slate-800">
         {activeIframe && isVideoFile(activeIframe) ? (
           <video
+            ref={(el) => {
+              videoRef.current = el;
+              if (el) el.setAttribute('referrerpolicy', 'no-referrer');
+            }}
             src={activeIframe}
             controls
             autoPlay

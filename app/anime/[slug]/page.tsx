@@ -26,12 +26,12 @@ export default async function AnimeDetailPage(props: { params: Promise<{ slug: s
         <div className="w-full md:w-64 max-w-xs mx-auto md:mx-0 shrink-0">
           <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl shadow-lg border border-white/10 bg-neutral-800">
             {anime.poster ? (
-              <Image 
-                src={anime.poster.startsWith('http') ? anime.poster : `https:${anime.poster}`} 
-                alt={anime.title} 
-                fill 
-                className="object-cover" 
-                referrerPolicy="no-referrer"
+              <Image
+                src={`/api/asset?url=${encodeURIComponent(anime.poster.startsWith('http') ? anime.poster : `https:${anime.poster}`)}`}
+                alt={anime.title}
+                fill
+                className="object-cover"
+                unoptimized
               />
             ) : <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white/30">No Image</div>}
           </div>

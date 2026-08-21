@@ -14,6 +14,9 @@ const resolvePoster = (poster: string | null) => {
   return `https:${poster}`;
 };
 
+const proxiedPoster = (poster: string) =>
+  `/api/asset?url=${encodeURIComponent(resolvePoster(poster)!)}`;
+
 export function HeroSpotlight({ items }: { items: AnimeItem[] }) {
   const slides = (items || []).filter((a) => a.poster).slice(0, 6);
   const [active, setActive] = useState(0);
@@ -45,13 +48,13 @@ export function HeroSpotlight({ items }: { items: AnimeItem[] }) {
           >
             {poster && (
               <Image
-                src={poster}
+                src={proxiedPoster(poster)}
                 alt=""
                 fill
                 priority={i === 0}
                 sizes="100vw"
                 className={`object-cover object-center ${isActive ? 'animate-kenburns' : ''}`}
-                referrerPolicy="no-referrer"
+                unoptimized
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#06060b] via-[#06060b]/60 to-[#06060b]/10" />
@@ -122,7 +125,7 @@ export function HeroSpotlight({ items }: { items: AnimeItem[] }) {
               }`}
             >
               {poster && (
-                <Image src={poster} alt="" fill sizes="64px" className="object-cover" referrerPolicy="no-referrer" />
+                <Image src={proxiedPoster(poster)} alt="" fill sizes="64px" className="object-cover" unoptimized />
               )}
             </button>
           );
