@@ -1,130 +1,130 @@
 # ZerAnime
 
-Anime streaming application built with **Next.js 15**, **React 19**, **TypeScript**, and **Tailwind CSS v4**. Uses the **Jikan API** (unofficial MyAnimeList) for data and streams episodes via `animeplay.cfd` iframes. Features a dark‑theme UI with orange/amber accents, favorites stored in `localStorage`, and server‑side rendering with the Next.js App Router.
+Aplikasi streaming anime berbasis **Next.js 15**, **React 19**, **TypeScript**, dan **Tailwind CSS v4**. Mengambil data dengan **scraping** dari `x6.sokuja.uk` (via `cheerio`) dan memutar episode langsung dari file `.mp4` upstream. Antarmuka bertema gelap dengan aksen ungu (gaya Crunchyroll), favorit disimpan di `localStorage`, dan rendering server-side dengan Next.js App Router.
 
-> **Catatan**: Nama paket di `package.json` adalah `ai-studio-applet` (artefak template AI Studio), namun nama produknya adalah **ZerAnime** (lihat `metadata.json`, `layout.tsx`, dan UI).
+> **Catatan**: nama paket di `package.json` sudah `zeranime` (sebelumnya artefak template `ai-studio-applet`).
 
 ## 📦 Teknologi
 
 | Lapisan | Teknologi |
 |---------|-----------|
 | Framework | Next.js 15 (App Router, Server Components by default) |
-| Runtime | React 19, Node.js (deployed on Cloud Run / Vercel) |
-| Bahasa | TypeScript 5.9 (strict mode) |
-| Styling | Tailwind CSS v4 (PostCSS), `tw-animate-css`, `clsx` + `tailwind-merge` |
+| Runtime | React 19, Node.js ≥ 20 (deploy di Vercel) |
+| Bahasa | TypeScript 5.9 |
+| Styling | Tailwind CSS v4 (PostCSS), `tw-animate-css`, `clsx` + `tailwind-merge`, `class-variance-authority` |
 | Komponen UI | Komponen kustom + `lucide-react` (ikon) |
-| Tematização | `next-themes` (dark mode forced, tidak ada toggle sistem) |
-| Pengambilan Data | Jikan API v4 (`api.jikan.moe/v4`) dengan `fetch` + cache ISR (`revalidate: 3600`) |
+| Tema | `next-themes` (dark mode), aksen ungu |
+| Pengambilan Data | Scraping `x6.sokuja.uk` dengan `cheerio` + `fetch` Next.js (cache ISR `revalidate`) |
+| Proxy Aset | Route same-origin `/api/asset` (gambar) & `/api/video` (mp4) — lewat `cors.caliph.my.id` saat di Vercel |
 | State | React `useState`/`useEffect` + `localStorage` (favorit) |
-| Formulir | `react-hook-form` + `@hookform/resolvers` (dikonfigurasi namun jarang digunakan) |
-| Animasi | `motion` (Framer Motion v12) |
-| AI | `@google/genai` (dikonfigurasi melalui `GEMINI_API_KEY` env, deklarasi kemampuan di `metadata.json`) |
-| Deploy | Next.js `output: 'standalone'` → Docker/Cloud Run; alat Firebase dalam dev deps |
+| Animasi | `motion` (Framer Motion) |
 
 ## 🗂 Struktur Proyek
 
 ```
 zeranime/
-├── app/                         # Next.js App Router pages
-│   ├── layout.tsx               # Root layout: ThemeProvider, Navbar, Footer, fonts
-│   ├── page.tsx                 # Home: staggered Jikan fetches (rate‑limit aware), HorizontalScroller sections
-│   ├── globals.css              # Tailwind v4 import only (1 baris)
-│   ├── anime/[slug]/            # Anime detail page
-│   │   ├── page.tsx             # Server component: getDetail, episodes list, FavoriteButton
-│   │   └── FavoriteButton.tsx   # Client component: localStorage favorites toggle
-│   ├── episode/[slug]/page.tsx  # Episode page: iframe embed dari animeplay.cfd
-│   ├── search/page.tsx          # Search page: getSearch + Pagination
-│   ├── schedule/page.tsx        # Weekly schedule per hari (nama hari Indonesia → Jikan)
-│   ├── genres/page.tsx          # Genre list page
-│   ├── genre/[slug]/page.tsx    # Genre detail page dengan pagination
-│   └── favorites/page.tsx       # Client page: menampilkan favorit dari localStorage
-├── components/                  # UI komponen bersama
-│   ├── AnimeCard.tsx            # Anime card (gambar, judul, badge, overlay play)
-│   ├── HorizontalScroller.tsx   # Horizontal scroll section dengan tombol nav
-│   ├── Navbar.tsx               # Sticky nav: logo, tautan, pencarian, toggle tema (paksa gelap)
-│   ├── Pagination.tsx           # Prev/Next pagination dengan penanganan query string
-│   └── theme-provider.tsx       # next-themes wrapper (client component)
-├── hooks/
-│   └── use-favorites.ts         # localStorage hook (toggle, cek, muat)
+├── app/
+│   ├── layout.tsx               # Root layout: ThemeProvider, Navbar/BottomNav, fonts
+│   ├── page.tsx                 # Home: HeroSpotlight + section horizontal scroller + pagination
+│   ├── globals.css              # Tailwind v4 import
+│   ├── anime/[slug]/            # Detail anime
+│   │   ├── page.tsx             # Server component: getDetail, daftar episode, FavoriteButton
+│   │   └── FavoriteButton.tsx   # Client: toggle favorit di localStorage
+│   ├── episode/[slug]/page.tsx  # Episode: VideoPlayer (mp4 via /api/video)
+│   ├── search/page.tsx          # Pencarian: getSearch + pagination
+│   ├── schedule/page.tsx        # Jadwal rilis mingguan
+│   ├── genres/page.tsx          # Daftar genre
+│   ├── genre/[slug]/page.tsx    # Anime per genre + pagination
+│   ├── favorites/page.tsx       # Favorit dari localStorage
+│   └── api/
+│       ├── asset/route.ts       # Proxy gambar/poster same-origin
+│       └── video/route.ts       # Proxy stream mp4 same-origin (forward Range)
+├── components/
+│   ├── AnimeCard.tsx            # Card anime (poster via /api/asset, badge, overlay)
+│   ├── HeroSpotlight.tsx        # Hero carousel beranda
+│   ├── VideoPlayer.tsx          # Pemutar <video> mp4 (src via /api/video) — dipakai halaman episode
+│   ├── EpisodePlayer.tsx        # Pemutar lama berbasis iframe (tidak digunakan)
+│   ├── HorizontalScroller.tsx   # Section scroll horizontal + nav
+│   ├── Navbar.tsx / BottomNav.tsx
+│   ├── Pagination.tsx
+│   └── theme-provider.tsx       # next-themes wrapper
+├── hooks/use-favorites.ts       # Hook localStorage favorit
 ├── lib/
-│   ├── scraper.ts               # Wrapper API Jikan: fetchJikan, mapAnime, semua fungsi get*
-│   └── utils.ts                 # utilitas `cn()` (clsx + tailwind-merge)
-├── next.config.ts               # Konfigurasi Next: output standalone, image remotePatterns, flag HMR nonaktif
-├── tsconfig.json                # TS strict, path alias @/*, plugin Next.js
-├── eslint.config.mjs            # Konfigurasi ESLint flat (extends eslint-config-next)
-├── .eslintrc.json               # Konfigurasi lama (digunakan oleh beberapa alat)
-├── postcss.config.mjs           # Tailwind v4 + autoprefixer
-├── package.json                 # Dependencies & scripts
-├── metadata.json                # Metadata aplikasi untuk deploy AI Studio
-├── .env.example                 # Placeholder untuk GEMINI_API_KEY & APP_URL
-├── .gitignore                   # Standar Next.js ignores
+│   ├── scraper.ts               # Scraper x6.sokuja.uk: getHome, getDetail, getEpisode, dsb.
+│   └── utils.ts                 # utilitas cn()
+├── next.config.ts               # output standalone, image remotePatterns '**'
+├── tsconfig.json, eslint.config.mjs, postcss.config.mjs
+├── package.json, metadata.json, .env.example, .gitignore
 └── README.md                    # <-- Anda sedang membacanya
 ```
+
+## 🔌 Arsitektur Proxy (Penting)
+
+Upstream (`x6.sokuja.uk` beserta CDN media `storages.sokuja.uk` / `global.nontony.uk`) memblokir:
+
+- **IP egress Vercel** → fetch server-side dari Vercel gagal (502 pada optimizer gambar).
+- **Referer `zeranime.vercel.app`** pada file media → CDN balas **403** (200/206 untuk tanpa referer atau referer `x6.sokuja.uk`).
+
+Solusi: dua route proxy **same-origin** di `app/api/`:
+
+- **`/api/asset?url=...`** — untuk poster/gambar. Browser memuat dari origin sendiri (`unoptimized`), server mengambil lewat `cors.caliph.my.id` dengan `Referer: https://x6.sokuja.uk/`.
+- **`/api/video?url=...`** — untuk stream `.mp4`. Meng-forward header `Range` agar seek berfungsi, lalu di-stream ke klien dari origin sendiri sehingga CDN tidak pernah menerima referer cross-origin.
+
+> Saat development (bukan Vercel), kedua proxy menembak upstream secara langsung tanpa `cors.caliph.my.id`.
 
 ## 🚀 Memulai
 
 ### Prasyarat
-- Node.js ≥ 20 (disarankan menggunakan versi LTS terbaru)
-- npm, yarn, atau pnpm
+- Node.js ≥ 20
+- npm / yarn / pnpm
 
 ### Instalasi
 
 ```bash
-# Clone repositori (jika belum)
 git clone https://github.com/svazerID/zeranime.git
 cd zeranime
-
-# Install dependensi
-npm install   # atau yarn / pnpm install
+npm install
 ```
 
 ### Variabel Lingkungan
 
-Buat file `.env` di root (meniru `.env.example`):
+`.env.example` berisi `GEMINI_API_KEY` dan `APP_URL` (artefak template AI Studio; opsional untuk fitur AI). Vercel mengisi `APP_URL` otomatis saat deploy.
 
 ```env
-GEMINI_API_KEY=your_google_gemini_api_key
-APP_URL=https://your-deployed-domain.vercel.app   # diisi otomatis oleh Vercel/Cloud Run
+GEMINI_API_KEY=your_key   # opsional
+APP_URL=https://zeranime.vercel.app
 ```
 
-> **Catatan**: `APP_URL` diisi otomatis oleh platform saat deploy; untuk development dapat dikosongkan atau diisi dengan `http://localhost:3000`.
-
-### Jalankan Pengembangan
+### Pengembangan
 
 ```bash
-npm run dev   # menjalankan dev server dengan Turbopack (Next 15)
+npm run dev     # Next 15 dev server
 ```
 
 Buka <http://localhost:3000> di browser Anda.
 
-### Build untuk Produksi
+### Produksi
 
 ```bash
-npm run build   # menghasilkan output standalone di .next/standalone
-npm start       # menjalankan server produksi
+npm run build
+npm start
 ```
 
 ### Lint
 
 ```bash
-npm run lint    # menjalankan ESLint dengan konfigurasi flat
-```
-
-### Bersihkan Cache Next.js (opsional)
-
-```bash
-npm run clean   # menghapus .next dan cache terkait
+npm run lint
 ```
 
 ## 📖 Panduan Penggunaan
 
-- **Beranda** menampilkan beberapa section (Ongoing, Popular, Genre‑specific, dsb.) menggunakan horizontal scrollers.
-- **Pencarian** (`/cari`) memungkinkan mencari anime berdasarkan judul; hasil ditampilkan dalam grid dengan paginasi.
-- **Detail Anime** (`/anime/[slug]`) menampilkan poster, judul, rating, studio, genre, sinopsis, dan daftar episode.
-- **Episode** (`/episode/[slug]`) menampilkan iframe pemutar dari `animeplay.cfd` (subtitle Indonesia).
-- **Jadwal** (`/jadwal`) menyiarkan jadwal rilis mingguan berdasarkan nama hari Indonesia (Senin, Selasa, …).
-- **Genre** (`/genre` dan `/genre/[slug]`) menafsirkan daftar anime per genre.
-- **Favorit** (`/favorit`) menyimpan anime yang Anda sukai di `localStorage`; tombol love di halaman detail untuk menambah/mengurangi daftar favorit.
+- **Beranda** (`/`): HeroSpotlight + chip genre + section scroller (Latest Updated, Most Viewed, New Release, Upcoming, Top Movies, serta section per genre).
+- **Detail Anime** (`/anime/[slug]`): poster, judul, rating, studio, genre, sinopsis, dan daftar episode.
+- **Episode** (`/episode/[slug]`): pemutar video `.mp4` (proxy `/api/video`) dengan pilihan kualitas server (480p/720p/1080p).
+- **Pencarian** (`/search`): cari berdasarkan judul + paginasi.
+- **Jadwal** (`/schedule`): jadwal rilis mingguan.
+- **Genre** (`/genres` dan `/genre/[slug]`): daftar anime per genre.
+- **Favorit** (`/favorites`): simpan anime di `localStorage`; tombol love di halaman detail untuk menambah/mengurangi.
 
 ## 🤝 Kontribusi
 
@@ -132,16 +132,16 @@ Kami menyambut kontribusi! Jika ingin memperbaiki bug, menambah fitur, atau meni
 
 1. Fork repositori ini.
 2. Buat branch fitur: `git checkout -b fitur/nama-fitur`.
-3. Lakukan perubahan, lalu commit dengan pesan yang jelasn3. Push ke branch Anda dan buat Pull Request ke `main` repositori upstream.
-4. Pastikan kode melewati linter (`npm run lint`) dan tes (jika ada).
+3. Lakukan perubahan, lalu commit dengan pesan yang jelas. Push ke branch Anda dan buat Pull Request ke `main`.
+4. Pastikan kode melewati linter (`npm run lint`).
 
-> **Catatan**: Proyek saat ini tidak memiliki konfigurasi tes otomatis. Jika Anda ingin menambah uji unit/integrasi, silakan lakukan dan sertakan dalam PR.
+> **Catatan**: Proyek saat ini tidak memiliki konfigurasi tes otomatis. Jika Anda ingin menambah uji, silakan sertakan dalam PR.
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah lisensi MIT. Lihat file `LICENSE` (jika ada) untuk detail lebih lanjut.
+Proyek ini dilisensikan di bawah lisensi MIT. Lihat file `LICENSE` untuk detail lebih lanjut.
 
 ---
 
-Selamat menikmati anime dengan ZerAnime! 🎌  
+Selamat menikmati anime dengan ZerAnime! 🎌
 Jika ada pertanyaan atau masukan, buka *issue* atau hubungi maintainer.
