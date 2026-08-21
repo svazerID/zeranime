@@ -1,0 +1,239 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #06060b;
+  --bg-soft: #0b0b14;
+  --bg-card: #101019;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #7c3aed;
+  --accent-2: #a78bfa;
+  --accent-3: #c084fc;
+  --accent-blue: #2f9bff;
+  --accent-blue-2: #66c0ff;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg);
+}
+
+/* Chrome Android may report itself as hover-capable and fire :hover while the
+   finger drags during a scroll. The hover transitions (color/border swaps) then
+   leave un-cleared "ghost-trail" repaints on some Xiaomi GPUs. On touch devices
+   hover transitions are pointless, so disable transitions on links/cards there
+   to eliminate the trails. */
+@media (hover: none), (pointer: coarse) {
+  a,
+  a * {
+    transition: none !important;
+  }
+}
+
+/* Selection */
+::selection {
+  background: rgba(124, 58, 237, 0.4);
+  color: #fff;
+}
+
+/* Custom scrollbar (desktop) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+  background-clip: padding-box;
+}
+
+/* Utility: hide scrollbar for horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Reusable gradient text for brand wordmark */
+.brand-gradient {
+  background: linear-gradient(100deg, var(--accent-blue-2) 0%, #fff 32%, var(--accent-3) 66%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Soft ambient glow used behind hero / cards */
+.glow-blur {
+  filter: blur(60px);
+  opacity: 0.5;
+}
+
+/* Fade-in for content sections */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease both;
+}
+
+/* Staggered reveal — set --i on each item for a cascading entrance */
+.reveal {
+  opacity: 0;
+  animation: fadeInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* Slow Ken Burns pan/zoom for hero backdrops */
+@keyframes kenburns {
+  0% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: scale(1.18) translate3d(-1.5%, -1.5%, 0);
+  }
+}
+.animate-kenburns {
+  animation: kenburns 12s ease-out both;
+}
+
+/* Gentle floating glow orb */
+@keyframes floatGlow {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(-8px) scale(1.05);
+    opacity: 0.6;
+  }
+}
+.animate-float-glow {
+  animation: floatGlow 7s ease-in-out infinite;
+}
+
+/* Frosted glass surface used on nav bars and chips */
+.glass {
+  background: rgba(13, 13, 22, 0.72);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* Soft fade on the left/right edges of horizontal rails (desktop) */
+@media (min-width: 640px) {
+  .edge-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 28px,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 28px,
+      #000 calc(100% - 28px),
+      transparent 100%
+    );
+  }
+}
+
+/* Big outlined rank numeral behind Top-10 style cards */
+.rank-number {
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 3px rgba(255, 255, 255, 0.22);
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  user-select: none;
+}
+
+/* Crunchyroll-style hover-expand card. The info drawer is clipped until hover
+   reveals it, and the whole card lifts above its neighbours. Only engages on
+   real hover-capable pointers so mobile taps navigate straight through. */
+@media (hover: hover) and (pointer: fine) {
+  .xpand {
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.28s ease;
+  }
+  .xpand:hover {
+    transform: translateY(-4px) scale(1.045);
+    z-index: 30;
+    box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.75),
+      0 0 0 1px rgba(167, 139, 250, 0.4);
+  }
+  .xpand-drawer {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.28s ease, opacity 0.2s ease;
+  }
+  .xpand:hover .xpand-drawer {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .xpand-drawer > .xpand-drawer-inner {
+    overflow: hidden;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .animate-fade-in-up,
+  .animate-kenburns,
+  .animate-float-glow {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.09) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Extra bottom padding on mobile so content clears the bottom nav */
+@media (max-width: 767px) {
+  .has-bottom-nav {
+    padding-bottom: 5.5rem;
+  }
+}
