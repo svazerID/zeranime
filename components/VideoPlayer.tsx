@@ -1,7 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Server, Captions, Mic, AlertCircle } from 'lucide-react';
+
+// Serve the video through our own origin so the browser never sends a
+// cross-origin Referer to the CDN (which returns 403 for the Vercel Referer).
+const proxiedVideo = (url: string | null) =>
+  url ? `/api/video?url=${encodeURIComponent(url)}` : null;
 
 export default function VideoPlayer({
   defaultIframe,
@@ -12,7 +17,6 @@ export default function VideoPlayer({
 }) {
   const [activeIframe, setActiveIframe] = useState<string | null>(defaultIframe);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // If defaultIframe is blocked or null, fallback to the first server's iframe if available
   useEffect(() => {
@@ -31,18 +35,14 @@ export default function VideoPlayer({
       <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative border border-slate-800">
         {activeIframe && isVideoFile(activeIframe) ? (
           <video
-            ref={(el) => {
-              videoRef.current = el;
-              if (el) el.setAttribute('referrerpolicy', 'no-referrer');
-            }}
-            src={activeIframe}
+            src={proxiedVideo(activeIframe)!}
             controls
             autoPlay
             className="w-full h-full border-0 absolute inset-0 bg-black"
           />
         ) : activeIframe ? (
           <iframe
-            src={activeIframe}
+            src={proxiedVideo(activeIframe)!}
             allowFullScreen
             className="w-full h-full border-0 absolute inset-0"
             referrerPolicy="no-referrer"
