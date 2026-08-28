@@ -1,3 +1,5 @@
+import { NextRequest, NextResponse } from 'next/server';
+
 // Stream via our own origin to inject the required Referer header.
 // The CDN (storages.sokuja.uk) returns 404 if no Referer is sent, 
 // and 403 if the Referer is foreign. It ONLY serves content when 
