@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { Server, Captions, Mic, AlertCircle } from 'lucide-react';
 
-// Serve the video through our own origin so the browser never sends a
-// cross-origin Referer to the CDN (which returns 403 for the Vercel Referer).
-const proxiedVideo = (url: string | null) =>
-  url ? `/api/video?url=${encodeURIComponent(url)}` : null;
+// Stream directly from the upstream CDN. The CDN (storages.sokuja.uk /
+// global.nontony.uk) only returns 403 when it sees a foreign Referer, so a
+// no-referrer <video>/<iframe> plays fine — and costs ZERO Vercel bandwidth.
+// (The old /api/video proxy burned ~21 GB of Fast Data Transfer in 12 hours.)
+const directVideo = (url: string | null) => url;
 
 export default function VideoPlayer({
   defaultIframe,
@@ -35,14 +36,15 @@ export default function VideoPlayer({
       <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative border border-slate-800">
         {activeIframe && isVideoFile(activeIframe) ? (
           <video
-            src={proxiedVideo(activeIframe)!}
+            src={directVideo(activeIframe)!}
             controls
             autoPlay
+            referrerPolicy="no-referrer"
             className="w-full h-full border-0 absolute inset-0 bg-black"
           />
         ) : activeIframe ? (
           <iframe
-            src={proxiedVideo(activeIframe)!}
+            src={directVideo(activeIframe)!}
             allowFullScreen
             className="w-full h-full border-0 absolute inset-0"
             referrerPolicy="no-referrer"

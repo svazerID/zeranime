@@ -11,9 +11,10 @@ const resolvePoster = (poster: string | null) => {
   return `https:${poster}`;
 };
 
-// Serve posters via our own origin so the upstream can't block them.
-const proxiedPoster = (poster: string) =>
-  `/api/asset?url=${encodeURIComponent(resolvePoster(poster)!)}`;
+// Load posters directly from the upstream CDN — it does not block foreign
+// referers, so no proxy is needed. (The old /api/asset proxy burned Vercel
+// Fast Data Transfer for every image on every page.)
+const proxiedPoster = (poster: string) => resolvePoster(poster)!;
 
 export function AnimeCard({ anime, rank }: { anime: AnimeItem; rank?: number }) {
   const href = anime.link || `/anime/${anime.slug}`;

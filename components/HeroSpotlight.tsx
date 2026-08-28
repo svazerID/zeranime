@@ -14,8 +14,7 @@ const resolvePoster = (poster: string | null) => {
   return `https:${poster}`;
 };
 
-const proxiedPoster = (poster: string) =>
-  `/api/asset?url=${encodeURIComponent(resolvePoster(poster)!)}`;
+const proxiedPoster = (poster: string) => resolvePoster(poster)!;
 
 export function HeroSpotlight({ items }: { items: AnimeItem[] }) {
   const slides = (items || []).filter((a) => a.poster).slice(0, 6);
