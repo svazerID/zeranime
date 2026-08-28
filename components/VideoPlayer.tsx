@@ -39,6 +39,7 @@ export default function VideoPlayer({
             src={directVideo(activeIframe)!}
             controls
             autoPlay
+            // @ts-ignore - referrerPolicy is valid HTML5 attribute but missing from React 19 types in this build
             referrerPolicy="no-referrer"
             className="w-full h-full border-0 absolute inset-0 bg-black"
           />
