@@ -1,9 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-
-// Streams upstream video through our own origin so the browser never sends a
-// cross-origin Referer to the CDN (storages.sokuja.uk / global.nontony.uk return
-// 403 for the Vercel Referer). On Vercel the egress IP is blocked, so we route
-// through the cors.caliph.my.id web proxy, same as /api/asset.
+// Stream via our own origin to inject the required Referer header.
+// The CDN (storages.sokuja.uk) returns 404 if no Referer is sent, 
+// and 403 if the Referer is foreign. It ONLY serves content when 
+// Referer matches x6.sokuja.uk.
 const PROXY_BASE = 'https://cors.caliph.my.id/';
 
 function hostAllowed(host: string): boolean {
@@ -34,12 +32,16 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Host not allowed', { status: 403 });
   }
 
+  // Always use the cors proxy on Vercel to ensure we can control headers
+  // or bypass IP blocks if necessary. For direct CDN access, we need 
+  // to spoof the referer which fetch() allows but <video> does not.
   const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
   const upstreamUrl = isVercel ? `${PROXY_BASE}${u.toString()}` : u.toString();
 
   const headers: Record<string, string> = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': '*/*',
+    // CRITICAL: Spoof referer to match the source site
     'Referer': 'https://x6.sokuja.uk/',
   };
   const range = req.headers.get('range');
