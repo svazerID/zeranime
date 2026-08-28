@@ -20,5 +20,8 @@ next-env.d.ts
 # android/termux artifact
 .nomedia
 
+# temporary diagnostic scripts
+_diag*.ts
+
 # logs
 *.log
