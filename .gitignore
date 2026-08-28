@@ -23,5 +23,11 @@ next-env.d.ts
 # temporary diagnostic scripts
 _diag*.ts
 
+# cloudflare / opennext build output
+.open-next/
+.wrangler/
+cloudflare-env.d.ts
+.dev.vars
+
 # logs
 *.log
