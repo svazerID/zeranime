@@ -46,8 +46,9 @@ async function fetchPage(url: string, params: Record<string, string | number> = 
     if (v !== undefined && v !== '' && v !== null) u.searchParams.set(k, String(v));
   }
   const finalUrl = u.toString();
-  const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
-  const targetUrl = isVercel ? `${PROXY_BASE}${finalUrl}` : finalUrl;
+  // Always route through the public web proxy — Vercel & Cloudflare egress
+  // IPs are both blocked by the upstream, so a direct fetch fails.
+  const targetUrl = `${PROXY_BASE}${finalUrl}`;
 
   const spoofedIp = generateRandomIP();
   try {

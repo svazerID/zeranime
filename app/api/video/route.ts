@@ -35,10 +35,9 @@ export async function GET(req: NextRequest) {
   }
 
   // Always use the cors proxy on Vercel to ensure we can control headers
-  // or bypass IP blocks if necessary. For direct CDN access, we need 
-  // to spoof the referer which fetch() allows but <video> does not.
-  const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
-  const upstreamUrl = isVercel ? `${PROXY_BASE}${u.toString()}` : u.toString();
+  // Always route through the public web proxy. Both Vercel and Cloudflare
+  // egress IP ranges are blocked by the upstream CDN, so a direct fetch fails.
+  const upstreamUrl = `${PROXY_BASE}${u.toString()}`;
 
   const headers: Record<string, string> = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',

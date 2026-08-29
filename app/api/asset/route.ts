@@ -33,8 +33,9 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Host not allowed', { status: 403 });
   }
 
-  const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
-  const upstreamUrl = isVercel ? `${PROXY_BASE}${u.toString()}` : u.toString();
+  // Always route through the public web proxy — Vercel & Cloudflare egress
+  // IPs are both blocked by the upstream, so direct fetch fails.
+  const upstreamUrl = `${PROXY_BASE}${u.toString()}`;
 
   try {
     const upstream = await fetch(upstreamUrl, {
