@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Stream via our own origin to inject the required Referer header.
-// The CDN (storages.sokuja.uk) returns 404 if no Referer is sent, 
-// and 403 if the Referer is foreign. It ONLY serves content when 
+// The CDN (storages.sokuja.uk) returns 404 if no Referer is sent,
+// and 403 if the Referer is foreign. It ONLY serves content when
 // Referer matches x6.sokuja.uk.
 const PROXY_BASE = 'https://cors.caliph.my.id/';
 
@@ -34,9 +34,8 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Host not allowed', { status: 403 });
   }
 
-  // Always use the cors proxy on Vercel to ensure we can control headers
-  // Always route through the public web proxy. Both Vercel and Cloudflare
-  // egress IP ranges are blocked by the upstream CDN, so a direct fetch fails.
+  // ALWAYS route through the cors proxy — both Vercel AND Cloudflare egress
+  // IPs are blocked by the upstream CDN, so a direct fetch always fails.
   const upstreamUrl = `${PROXY_BASE}${u.toString()}`;
 
   const headers: Record<string, string> = {

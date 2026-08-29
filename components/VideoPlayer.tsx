@@ -17,7 +17,6 @@ export default function VideoPlayer({
 }) {
   const [activeIframe, setActiveIframe] = useState<string | null>(defaultIframe);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
-  const [videoError, setVideoError] = useState<string | null>(null);
 
   // If defaultIframe is blocked or null, fallback to the first server's iframe if available
   useEffect(() => {
@@ -34,31 +33,11 @@ export default function VideoPlayer({
     <div className="w-full flex flex-col gap-4">
       {/* Video Player Section */}
       <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative border border-slate-800">
-        {videoError ? (
-          <div className="flex flex-col items-center justify-center h-full text-slate-400 space-y-3 p-4 text-center">
-            <AlertCircle className="w-10 h-10 text-red-500/70" />
-            <p className="text-sm">Video gagal diputar.</p>
-            <p className="text-xs text-slate-500 break-all">{videoError}</p>
-            <button
-              onClick={() => { setVideoError(null); }}
-              className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium"
-            >
-              Coba lagi
-            </button>
-          </div>
-        ) : activeIframe && isVideoFile(activeIframe) ? (
+        {activeIframe && isVideoFile(activeIframe) ? (
           <video
-            key={proxiedVideo(activeIframe)}
             src={proxiedVideo(activeIframe)!}
             controls
             autoPlay
-            muted
-            playsInline
-            preload="auto"
-            onError={(e) => {
-              const el = e.currentTarget;
-              setVideoError(el.error?.message || 'Unknown playback error');
-            }}
             className="w-full h-full border-0 absolute inset-0 bg-black"
           />
         ) : activeIframe ? (
@@ -89,7 +68,6 @@ export default function VideoPlayer({
                  onClick={() => {
                    setActiveIframe(srv.linkId);
                    setActiveIndex(i);
-                   setVideoError(null);
                  }}
                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors ${
                    isActive
