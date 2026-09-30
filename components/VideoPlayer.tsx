@@ -3,10 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Server, Captions, Mic, AlertCircle } from 'lucide-react';
 
-// Serve the video through our own origin to inject the required Referer header.
-// Direct playback fails because the CDN requires Referer: x6.sokuja.uk.
-const proxiedVideo = (url: string | null) =>
-  url ? `/api/video?url=${encodeURIComponent(url)}` : null;
 
 export default function VideoPlayer({
   defaultIframe,
@@ -35,17 +31,19 @@ export default function VideoPlayer({
       <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative border border-slate-800">
         {activeIframe && isVideoFile(activeIframe) ? (
           <video
-            src={proxiedVideo(activeIframe)!}
+            src={`/api/video?url=${encodeURIComponent(activeIframe)}`}
             controls
             autoPlay
             className="w-full h-full border-0 absolute inset-0 bg-black"
           />
         ) : activeIframe ? (
           <iframe
-            src={proxiedVideo(activeIframe)!}
+            src={activeIframe}
             allowFullScreen
             className="w-full h-full border-0 absolute inset-0"
             referrerPolicy="no-referrer"
+            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+            title="Video Player"
           ></iframe>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-4">

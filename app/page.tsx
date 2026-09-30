@@ -32,24 +32,17 @@ export default async function HomePage(props: { searchParams?: Promise<{ [key: s
   let heroItems: any[] = [];
 
   if (page === 1) {
-    // Group 1
-    const [resHome, resTop, resNew] = await Promise.all([
-      getHome(page), getTop(1), getNew(1)
-    ]);
-    // Group 2
-    await new Promise(r => setTimeout(r, 600));
-    const [resUpcoming, resMovies, resAction] = await Promise.all([
-      getUpcoming(1), getMovies(1), getAction(1)
-    ]);
-    // Group 3
-    await new Promise(r => setTimeout(r, 600));
-    const [resRomance, resComedy, resAdventure] = await Promise.all([
-      getRomance(1), getComedy(1), getAdventure(1)
-    ]);
-    // Group 4
-    await new Promise(r => setTimeout(r, 600));
-    const [resSciFi, resFantasy] = await Promise.all([
-      getSciFi(1), getFantasy(1)
+    // Fetch all sections concurrently — no staggered delays, Workers has a CPU budget.
+    const [
+      resHome, resTop, resNew,
+      resUpcoming, resMovies, resAction,
+      resRomance, resComedy, resAdventure,
+      resSciFi, resFantasy,
+    ] = await Promise.all([
+      getHome(page), getTop(1), getNew(1),
+      getUpcoming(1), getMovies(1), getAction(1),
+      getRomance(1), getComedy(1), getAdventure(1),
+      getSciFi(1), getFantasy(1),
     ]);
 
     homeData = resHome as any;

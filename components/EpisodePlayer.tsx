@@ -337,7 +337,7 @@ export default function EpisodePlayer({ episode, slug }: EpisodePlayerProps) {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }

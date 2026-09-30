@@ -51,6 +51,9 @@ async function fetchPage(url: string, params: Record<string, string | number> = 
   const targetUrl = `${PROXY_BASE}${finalUrl}`;
 
   const spoofedIp = generateRandomIP();
+  // Use standard Fetch cache options (supported by Cloudflare Workers).
+  // revalidate=0 means no-store, otherwise force-cache.
+  const cacheOption: RequestCache = revalidate === 0 ? 'no-store' : 'force-cache';
   try {
     const response = await fetch(targetUrl, {
       headers: {
@@ -65,7 +68,7 @@ async function fetchPage(url: string, params: Record<string, string | number> = 
         'X-Originating-IP': spoofedIp,
         'Forwarded': `for=${spoofedIp}`,
       },
-      next: { revalidate },
+      cache: cacheOption,
     });
     if (!response.ok) return '';
     return await response.text();
