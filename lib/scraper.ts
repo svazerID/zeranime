@@ -1,7 +1,7 @@
 // Sokuja Scraper (x6.sokuja.uk)
 // Server-side only. Uses native fetch (Next.js cached) + cheerio.
 
-import * as cheerio from 'cheerio';
+import * as cheerio from 'cheerio/slim';
 
 const BASE_URL = 'https://x6.sokuja.uk/';
 const B = BASE_URL.replace(/\/$/, '');
